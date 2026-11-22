@@ -103,6 +103,21 @@ main{padding-block:26px 60px}
 .search{width:100%;border:2px solid var(--ink);background:var(--panel);padding:10px 12px;border-radius:3px;margin-bottom:8px}
 .scroll{max-height:520px;overflow:auto;border-bottom:1px solid var(--line)}
 
+/* equipment pop-up */
+.holder{position:relative}
+.pop{position:absolute;z-index:3;width:min(330px,82%);background:var(--panel);color:var(--ink);border:2px solid var(--ink);padding:14px 16px 14px;margin:20px 0 0 20px;box-shadow:6px 6px 0 rgba(23,35,29,.18)}
+.pop.r{margin-left:0;margin-right:20px}.pop.b{margin-top:0;margin-bottom:20px}
+.pop .ph{display:flex;align-items:baseline;gap:10px;padding-right:26px}
+.pop .pn{font-size:26px}.pop .pt{font-weight:700;font-size:17px;line-height:1.25}
+.pop .pd{font-size:15px;line-height:1.45;margin:8px 0 10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips span{border:1px solid var(--line);border-radius:99px;padding:3px 9px;font-size:13px;font-weight:650}
+.plink{background:transparent;border:0;padding:0;margin-top:12px;color:var(--accent);font-weight:650;text-decoration:underline;text-align:left}
+.pclose{position:absolute;right:6px;top:4px;width:32px;height:32px;border:0;background:transparent;font-size:22px;line-height:1}
+.pmore{margin-top:12px;border-top:1px solid var(--line);padding-top:4px}
+.pmore .pk{font-size:13px;color:var(--mut);margin-top:8px}
+.pmore p{font-size:15px;line-height:1.45}
+
 /* checklist */
 .rows{display:grid;gap:0;border-top:2px solid var(--ink);margin-top:12px}
 .rowc{display:grid;grid-template-columns:104px minmax(0,1fr) minmax(0,1.3fr) minmax(0,1.6fr);gap:6px 18px;padding:13px 0;border-bottom:1px solid var(--line);align-items:start}
@@ -152,6 +167,7 @@ h2.sec{font-size:clamp(30px,5vw,48px);margin-top:10px}
   .rowc .lab{display:block}
   .scroll{max-height:360px}
   .issue{margin-left:0}
+  .pop,.pop.r,.pop.b{position:static;width:auto;margin:10px 0 0;box-shadow:none}
   .ring{width:26px;height:26px;margin:-13px 0 0 -13px;border-width:3px;box-shadow:0 0 0 4px rgba(198,57,44,.22)}
   .ring.sm{width:20px;height:20px;margin:-10px 0 0 -10px}
 }
@@ -256,17 +272,31 @@ function exTopics(ex,sid,play){
 }
 
 function exEquip(ex,sid){
-  var box=$('section',{class:'ex'}),left=$('div'),side=$('div',{class:'side'}),v=0,st=null,cur=null,ul=$('ol',{class:'topics'}),q='',tabs=$('div',{class:'tabs'}),holder=$('div');
-  function draw(){holder.textContent='';st=stage(sid,ex.views[v].crop);holder.appendChild(st);
+  var box=$('section',{class:'ex'}),left=$('div'),side=$('div',{class:'side'}),v=0,st=null,cur=null,open=false,more=false,ul=$('ol',{class:'topics'}),q='',tabs=$('div',{class:'tabs'}),holder=$('div',{class:'holder'});
+  function pop(){var o=holder.querySelector('.pop');if(o)o.remove();if(!cur||cur.v!==v||!open)return;
+    var m=cur.marks[0],c=ex.views[v].crop,x=(m[0]-c[0])/(c[2]-c[0])*100,y=(m[1]-c[1])/(c[3]-c[1])*100;
+    var p=$('div',{class:'pop',role:'dialog','aria-label':'Item '+cur.n+', '+cur.t});
+    if(x>52){p.style.right=(100-x)+'%';p.className+=' r';}else p.style.left=x+'%';
+    if(y>55){p.style.bottom=(100-y)+'%';p.className+=' b';}else p.style.top=y+'%';
+    p.appendChild($('button',{class:'pclose',type:'button','aria-label':'Close',text:'×',onclick:function(){open=false;pop();}}));
+    p.appendChild($('div',{class:'ph'},$('span',{class:'wide pn',text:String(cur.n)}),$('span',{class:'pt',text:cur.t})));
+    p.appendChild($('p',{class:'pd',text:cur.d}));
+    p.appendChild($('div',{class:'chips'},$('span',{text:'Qty '+cur.q}),$('span',{text:ex.views[v].room})));
+    if(more){p.appendChild($('div',{class:'pmore'},$('div',{class:'pk',text:'What it is for'}),$('p',{text:cur.u||''}),$('div',{class:'pk',text:'Where'}),$('p',{text:ex.views[v].name}),$('div',{class:'pk',text:'Datasheet'}),$('p',{text:'Added when a make and model is chosen.'})));
+      var i=ex.topics.indexOf(cur),nx=ex.topics[(i+1)%ex.topics.length];
+      p.appendChild($('div',{class:'pact'},$('button',{class:'plink',type:'button',text:'Next: '+nx.n+' '+nx.t,onclick:function(){pick(nx,true);}})));}
+    else p.appendChild($('button',{class:'plink',type:'button',text:'Open the full card',onclick:function(){more=true;pop();}}));
+    holder.appendChild(p);}
+  function draw(){var o=holder.querySelector('.stage');if(o)o.remove();st=stage(sid,ex.views[v].crop);holder.insertBefore(st,holder.firstChild);
     ex.topics.forEach(function(t){if(t.v!==v)return;var p=st.pos(t.marks[0]),hb=$('button',{class:'hit',type:'button','aria-label':'Item '+t.n+', '+t.t,onclick:function(){pick(t,true);}});hb.style.left=p[0];hb.style.top=p[1];st.appendChild(hb);});
     if(cur&&cur.v===v)st.rings(cur.marks);
-    Array.prototype.forEach.call(tabs.children,function(b,i){b.setAttribute('aria-pressed',i===v?'true':'false');});}
+    Array.prototype.forEach.call(tabs.children,function(b,i){b.setAttribute('aria-pressed',i===v?'true':'false');});pop();}
   function list(){ul.textContent='';var n=0;ex.topics.forEach(function(t){
       if(q&&(t.t+' '+t.d+' '+t.n).toLowerCase().indexOf(q)<0)return;n++;
       var li=$('li',{class:cur===t?'on':''},$('button',{type:'button',onclick:function(){pick(t,false);}},$('span',{class:'n',text:String(t.n)}),$('span',null,$('span',{class:'tt',text:t.t+(t.q>1?'  × '+t.q:'')}),$('span',{class:'dd',text:t.d}))));
       if(cur===t)li.id='eq-on';ul.appendChild(li);});
     if(!n)ul.appendChild($('li',null,$('p',{class:'note',text:'No equipment matches that search. Try a shorter word.'})));}
-  function pick(t,scroll){cur=t;if(t.v!==v){v=t.v;}draw();list();if(scroll){var e=document.getElementById('eq-on');if(e&&e.scrollIntoView)e.scrollIntoView({block:'nearest'});}}
+  function pick(t,scroll){cur=t;open=true;if(t.v!==v){v=t.v;}draw();list();if(scroll){var e=document.getElementById('eq-on');if(e&&e.scrollIntoView)e.scrollIntoView({block:'nearest'});}}
   ex.views.forEach(function(vw,i){tabs.appendChild($('button',{type:'button',text:vw.name,onclick:function(){v=i;draw();}}));});
   var s=$('input',{class:'search',id:'eq-search',type:'search',placeholder:'Search equipment','aria-label':'Search equipment',oninput:function(){q=s.value.trim().toLowerCase();list();}});
   left.appendChild(tabs);left.appendChild(holder);
