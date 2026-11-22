@@ -7,6 +7,26 @@
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#04060a">
 <title>Z1 Power Labs</title>
+<meta name="description" content="Research and development labs for batteries, inverters and energy storage. See how a single cell becomes a system, then visit our sites.">
+<link rel="canonical" href="https://www.z1plans.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Z1 Power Labs">
+<meta property="og:title" content="Z1 Power Labs">
+<meta property="og:description" content="See how a single cell becomes a system, then visit our sites.">
+<meta property="og:url" content="https://www.z1plans.com/">
+<meta property="og:image" content="https://www.z1plans.com/home/share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A battery storage system drawn in glowing particles, with the words Z1 Power Labs.">
+<meta property="og:video" content="https://www.z1plans.com/home/share.mp4">
+<meta property="og:video:secure_url" content="https://www.z1plans.com/home/share.mp4">
+<meta property="og:video:type" content="video/mp4">
+<meta property="og:video:width" content="1200">
+<meta property="og:video:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Z1 Power Labs">
+<meta name="twitter:description" content="See how a single cell becomes a system, then visit our sites.">
+<meta name="twitter:image" content="https://www.z1plans.com/home/share.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap">
 <style>
@@ -68,6 +88,7 @@ header .mark{font-weight:800;font-size:22px;margin-right:auto}
 .tag{position:fixed;z-index:4;transform:translate(-50%,-100%);pointer-events:none;font-weight:700;font-size:15px;background:rgba(4,6,10,.6);padding:4px 10px;border:1px solid var(--line);white-space:nowrap;transition:opacity .4s}
 .tag b{color:var(--amber);font-family:var(--display);font-stretch:125%;margin-right:8px}
 @media (max-width:700px){ header{gap:8px} header .mark{font-size:16px;white-space:nowrap} .ghost{padding:7px 8px;font-size:12px;white-space:nowrap} #sites{padding-top:calc(84px + env(safe-area-inset-top,0px))} .tag{display:none} #rail button span{display:none} #copy{padding-bottom:calc(11vh + env(safe-area-inset-bottom,0px))} .site .nm{font-size:36px} #sites{background:rgba(4,6,10,.82)} }
+body.cap header .ghost,body.cap #rail,body.cap #hint,body.cap #enter,body.cap #sites{display:none!important} body.cap #copy{transition:none}
 @media (prefers-reduced-motion:reduce){ #enter,#copy,#sites,.tag{transition:none} }
 </style>
 </head>
@@ -190,9 +211,10 @@ if (ok) {
 } else { $('gl').hidden = true; $('still').hidden = false; }
 function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w < h ? 56 : 34; if (w > h * 1.25) camera.setViewOffset(w, h, -w * .15, -h * .03, w, h); else camera.setViewOffset(w, h, 0, h * .12, w, h); camera.updateProjectionMatrix(); const px = renderer.getPixelRatio() * h / 1080 * 3.2; mat.uniforms.uPix.value = px; composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(w, h); }
 const ease = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; const lerp = (a, b, k) => a + (b - a) * k;
-let fromP = 0, tSwap = -1e9; const DURM = reduce ? 0.01 : 1.9;
-function frame(now) {
-  if (!running) return; requestAnimationFrame(frame); if (!ok) return;
+let fromP = 0, tSwap = -1e9; const DURM = reduce && !new URLSearchParams(location.search).has('cap') ? 0.01 : 1.9;
+const CAP = new URLSearchParams(location.search).has('cap');
+function frame(now) { if (!running) return; requestAnimationFrame(frame); if (!ok || CAP) return; step(now); }
+function step(now) {
   const t = (now - t0) / 1000, k = Math.max(0, Math.min(1, (now - tSwap) / 1000 / DURM)); P = Math.max(0, Math.min(4, lerp(fromP, target, ease(k))));
   mat.uniforms.uP.value = P; mat.uniforms.uT.value = t; mat.uniforms.uPulse.value = Math.max(0, (now - tSwap) / 1000 - DURM * .8) / 1.6; if (bloomPass) bloomPass.strength = (small ? 1.0 : 1.25) + .6 * Math.sin(Math.min(1, k) * Math.PI);
   mEase[0] += (mouse[0] - mEase[0]) * .05; mEase[1] += (mouse[1] - mEase[1]) * .05;
@@ -269,6 +291,14 @@ document.addEventListener('visibilitychange', () => { const r = !document.hidden
 copy.hidden = true; rail.hidden = false; requestAnimationFrame(frame);
 if (!ok) { // no WebGL: the still image, and the sites list stays reachable
   CH.forEach((c) => c); }
+if (CAP) { document.body.classList.add('cap'); const S = [-10, 2.6, 5.4, 8.2, 11.2], og = new URLSearchParams(location.search).get('cap') === 'og';
+  window.__z1cap = (T) => { let i = 0; for (let k = 1; k < 5; k++) if (T >= S[k]) i = k; if (og) { i = 3; T = 20 + T; }
+    if (og) { mat.uniforms.uSize.value = 9.5; mat.uniforms.uAlpha.value = 1.5; } t0 = 0; fromP = Math.max(0, i - 1); target = i; tSwap = (og ? 0 : S[i]) * 1000; cur = i; mouse[0] = mouse[1] = mEase[0] = mEase[1] = 0; step(T * 1000);
+    const since = T - S[i], txt = since > .55 || i === 0 ? i : i - 1, c = CH[txt]; copy.hidden = false;
+    copy.querySelector('.n').textContent = og ? '' : txt < 4 ? '0' + (txt + 1) + ' / 04' : 'z1plans.com';
+    copy.querySelector('h2').textContent = og ? 'Z1 Power Labs' : txt < 4 ? c.h : 'Visit our sites';
+    copy.querySelector('p').textContent = og ? 'Research and development labs for batteries, inverters and energy storage.' : txt < 4 ? c.p : 'Each site keeps its drawings in its own plan room.';
+    const fade = i === 0 ? 1 : since < .4 ? 1 - since / .4 : since < .55 ? 0 : Math.min(1, (since - .55) / .4); copy.style.opacity = og ? 1 : fade; return true; }; }
 window.__z1 = { go, select, state: () => ({ cur, P, ok, N, entered, audio: snd.ctx ? snd.ctx.state : 'none', sound: snd.on }) };
 </script>
 </body>
