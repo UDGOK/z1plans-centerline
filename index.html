@@ -81,6 +81,8 @@ header .mark span{color:var(--mut);font-weight:600;font-size:15px;padding-bottom
 .area b{font-family:var(--display);font-stretch:62%;font-weight:800;font-size:30px;display:block;line-height:1}
 .area span{color:var(--mut);font-size:16px;display:block;margin-top:6px}
 #about .more a{font-weight:650}
+.mail{display:inline-block;margin-top:8px;font-weight:700;font-size:20px;user-select:all}
+.copy{margin-left:10px;padding:5px 10px;font-size:13px}
 @media (max-width:700px){#about{background:rgba(4,6,10,.94)}}
 /* sites menu */
 #sites{position:fixed;left:0;top:0;bottom:0;z-index:6;width:min(560px,100vw);padding-top:calc(96px + env(safe-area-inset-top,0px));padding-bottom:calc(30px + env(safe-area-inset-bottom,0px));background:linear-gradient(to right,rgba(4,6,10,.9) 0%,rgba(4,6,10,.7) 70%,rgba(4,6,10,0) 100%);overflow:auto;transition:opacity .5s, transform .5s}
@@ -132,11 +134,12 @@ body.cap #about,body.cap header .ghost,body.cap #rail,body.cap #hint,body.cap #e
   <p class="lede">Each site keeps its drawings in its own plan room.</p>
   <div id="siteList"></div>
   <div id="siteCard"></div>
-  <p class="more">New sites appear here as they are added. Plan rooms open with an access code from Z1 Power.</p>
+  <p class="more">New sites appear here as they are added. Plan rooms open with an access code from Z1 Power. To ask for one, write to <a href="mailto:yasir@z1power.com">yasir@z1power.com</a>.</p>
 </section>
 <section id="about" class="pad off" aria-labelledby="ah"><div class="in">
   <h2 class="cond" id="ah">What we do</h2>
   <div id="areas"></div>
+  <div class="area" id="contact"><b>Contact</b><span>For partnerships, customers and plan room access.</span><a class="mail" href="mailto:yasir@z1power.com">yasir@z1power.com</a> <button class="ghost copy" type="button" id="copyMail">Copy</button></div>
   <p class="more">The cabinet and shapes on this page are generic illustrations, not Z1 Power products.</p>
 </div></section>
 <div id="tags"></div>
@@ -296,6 +299,7 @@ addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') { mouse[
 btnSites.addEventListener('click', () => { about(false); go(cur === 4 ? 3 : 4); });
 const aboutEl = $('about'), btnAbout = $('btnAbout'); AREAS.forEach(([n, d]) => { const r = document.createElement('div'); r.className = 'area'; const b = document.createElement('b'); b.textContent = n; const sp = document.createElement('span'); sp.textContent = d; r.append(b, sp); $('areas').append(r); });
 function about(on) { aboutEl.classList.toggle('off', !on); btnAbout.setAttribute('aria-pressed', on ? 'true' : 'false'); btnAbout.textContent = on ? 'Close' : 'What we do'; if (on) sfxTick(); }
+$('copyMail').addEventListener('click', (e) => { const b = e.currentTarget, done = (ok) => { b.textContent = ok ? 'Copied' : 'Select the address to copy'; }; try { navigator.clipboard.writeText('yasir@z1power.com').then(() => done(true), () => done(false)); } catch (x) { done(false); } });
 btnAbout.addEventListener('click', () => about(aboutEl.classList.contains('off')));
 addEventListener('keydown', (e) => { if (e.key === 'Escape') about(false); });
 // ---------- sites menu ----------
