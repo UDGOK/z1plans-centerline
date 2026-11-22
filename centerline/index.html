@@ -22,19 +22,11 @@
 <style>
 /* Layout: a drawing-sheet world. Left-aligned, one wide stage for the drawing and a narrow reading column beside it; sheet numbers set wide and heavy like a title block. */
 :root{
-  --bg:#EDF0EA; --panel:#FFFFFF; --ink:#17231D; --mut:#56655D; --line:#C3CBC4;
-  --accent:#1D5C40; --on-accent:#FFFFFF; --red:#B93325; --amb:#9A5B0B; --ok:#1D5C40;
-  --red-bg:#F8DEDA; --amb-bg:#F7E9CF; --ok-bg:#DCEFE4; --paper:#FBFBF8; --ring:#C6392C;
-  --display:"Archivo","Arial Narrow",Arial,sans-serif; --body:"Archivo",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --bg:#06090b; --panel:#0e1416; --ink:#F2EEE1; --mut:#A3ABA4; --line:#2c3836;
+  --accent:#FFB84A; --on-accent:#0a0d0f; --red:#F08678; --amb:#E9B062; --ok:#6FCF9F;
+  --red-bg:#40201C; --amb-bg:#3B2E17; --ok-bg:#1B3528; --paper:#F7F7F3; --ring:#E0483A;
+  --display:"Archivo","Arial Narrow",Arial,sans-serif; --body:"Archivo",system-ui,-apple-system,"Segoe UI",Arial,sans-serif; color-scheme:dark
 }
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#111916; --panel:#19231E; --ink:#E9EEE8; --mut:#9DABA2; --line:#34443C;
-  --accent:#6FCF9F; --on-accent:#0E1713; --red:#F08678; --amb:#E9B062; --ok:#6FCF9F;
-  --red-bg:#40201C; --amb-bg:#3B2E17; --ok-bg:#1B3528; --paper:#F4F5F1; --ring:#E0483A; color-scheme:dark } }
-:root[data-theme="dark"]{
-  --bg:#111916; --panel:#19231E; --ink:#E9EEE8; --mut:#9DABA2; --line:#34443C;
-  --accent:#6FCF9F; --on-accent:#0E1713; --red:#F08678; --amb:#E9B062; --ok:#6FCF9F;
-  --red-bg:#40201C; --amb-bg:#3B2E17; --ok-bg:#1B3528; --paper:#F4F5F1; --ring:#E0483A; color-scheme:dark }
 *{box-sizing:border-box}
 :root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0}
@@ -55,12 +47,26 @@ h1,h2,h3,p{margin:0}
 .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
 
 /* gate */
-#gate{min-height:100%;display:grid;place-items:center;padding-block:40px}
-#gate form{width:min(460px,100%)}
-#gate h1{font-size:clamp(44px,11vw,72px)}
-#gate p{margin-top:14px;max-width:38ch}
-#gate .row{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
-#gate input{flex:1;min-width:0;border:2px solid var(--ink);background:var(--panel);padding:13px 14px;border-radius:3px;font-size:18px}
+#fx{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;transition:opacity .6s}
+#gate{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:calc(9vh + env(safe-area-inset-bottom,0px));background:linear-gradient(to right,rgba(6,9,11,.9),rgba(6,9,11,.45) 48%,rgba(6,9,11,0) 75%);transition:opacity .5s}
+#gate.out{opacity:0;pointer-events:none}
+#gate.wrap,.gtop.wrap,#opening.wrap{max-width:none;padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px))}
+@media (max-width:700px){.gtop b{font-size:16px}.gtop b span{display:none}.gh{font-size:13px;padding:7px 10px;white-space:nowrap}}
+#gate form{width:min(640px,100%)}
+#gate .kick{font-family:var(--display);font-stretch:125%;font-weight:800;color:var(--accent);font-size:17px}
+#gate h1{font-size:clamp(64px,13vw,150px);margin-top:6px}
+#gate p{margin-top:16px;max-width:32ch;font-size:clamp(17px,1.9vw,22px);color:var(--mut)}
+#gate .row{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+#gate input{flex:1;min-width:0;border:2px solid var(--ink);background:rgba(6,9,11,.65);color:var(--ink);padding:15px 16px;border-radius:3px;font-size:20px}
+#gate .btn{font-size:18px;padding:15px 22px;background:var(--ink);color:var(--bg)}
+.gtop{position:fixed;left:0;right:0;top:0;z-index:3;display:flex;align-items:center;gap:12px;padding-top:calc(18px + env(safe-area-inset-top,0px))}
+.gtop b{font-size:20px;font-weight:800;margin-right:auto}.gtop b span{font-weight:500;color:var(--mut);font-size:15px}
+.gh{background:rgba(6,9,11,.5);color:var(--ink);border:1.5px solid var(--line);border-radius:3px;padding:8px 13px;font-weight:650;font-size:14px;text-decoration:none}
+#opening{position:fixed;left:0;right:0;bottom:0;z-index:4;padding-bottom:calc(8vh + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,rgba(6,9,11,.85),rgba(6,9,11,0));padding-top:120px;transition:opacity .5s}
+#opening .kick{font-family:var(--display);font-stretch:125%;font-weight:800;color:var(--accent);font-size:17px}
+#opening h2{font-size:clamp(48px,10vw,130px);margin-top:6px}
+#opening .bar{height:4px;background:var(--line);margin-top:26px;max-width:900px}#opening .bar i{display:block;height:4px;width:0;background:var(--accent)}
+#opening button{margin-top:18px}
 #err{margin-top:12px;color:var(--red);font-weight:600;min-height:1.5em}
 
 /* header */
@@ -75,7 +81,7 @@ main{padding-block:26px 60px}
 .sheet-head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 22px;margin-bottom:22px}
 .sheet-no{font-size:clamp(46px,9vw,84px);color:var(--ink)}
 .sheet-title{font-size:clamp(20px,3vw,26px);font-weight:600;padding-bottom:6px}
-.issue{margin-left:auto;border:1.5px solid var(--accent);color:var(--accent);padding:7px 12px;border-radius:3px;font-size:14px;font-weight:600}
+.issue{margin-left:auto;border:1.5px solid var(--ok);color:var(--ok);padding:7px 12px;border-radius:3px;font-size:14px;font-weight:600}
 .issue span{display:block;color:var(--ink);font-weight:400}
 
 /* explainer */
@@ -187,10 +193,13 @@ h2.sec{font-size:clamp(30px,5vw,48px);margin-top:10px}
 </head>
 <body>
 
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="gtop wrap" id="gtop"><b>Z1 Power Labs <span>/ Z1P-CL-01</span></b><a class="gh" href="../">All sites</a><button class="gh" type="button" id="snd" aria-pressed="false">Sound off</button></div>
 <div id="gate" class="wrap">
   <form id="gateform" autocomplete="off">
+    <div class="kick">Z1P-CL-01</div>
     <h1 class="cond">Plan room</h1>
-    <p>This plan set is shared with reviewers by access code. Enter the code the applicant gave you.</p>
+    <p>Battery and BMS lab. Enter the access code from Z1 Power.</p>
     <div class="row">
       <input id="code" name="code" type="text" inputmode="text" autocapitalize="none" spellcheck="false" aria-label="Access code" placeholder="Access code">
       <button class="btn" type="submit" id="go">Open the plans</button>
@@ -198,6 +207,7 @@ h2.sec{font-size:clamp(30px,5vw,48px);margin-top:10px}
     <div id="err" role="alert"></div>
   </form>
 </div>
+<div id="opening" class="wrap" hidden><div class="kick">Code accepted</div><h2 class="cond" id="openh">Opening the plans</h2><div class="bar"><i id="openbar"></i></div><button class="gh" type="button" id="skip">Skip</button></div>
 
 <div id="app" hidden>
   <header class="top"><div class="wrap">
@@ -209,6 +219,80 @@ h2.sec{font-size:clamp(30px,5vw,48px);margin-top:10px}
 </div>
 <div id="viewer" hidden></div>
 
+<script type="importmap">{"imports":{"three":"../home/three.module.min.js"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from '../home/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from '../home/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from '../home/jsm/postprocessing/UnrealBloomPass.js';
+const cv = document.getElementById('fx'), reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, small = Math.min(innerWidth, innerHeight) < 700;
+const FX = window.Z1FX = { ok: false, keys() {}, unlock(cb) { cb(); }, stop() { cv.remove(); } };
+let renderer; try { renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: false, powerPreference: 'high-performance' }); } catch (e) {}
+if (renderer && !document.getElementById('gate').hidden) {
+  const N = small ? 22000 : 52000; let seed = 11; const R = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const cyl = (x, y, z, r, h) => () => { const a = R() * 6.2832; return [x + Math.cos(a) * r * Math.sqrt(R()), y + (R() - .5) * h, z + Math.sin(a) * r * Math.sqrt(R())]; };
+  const ring = (x, y, z, r, t) => () => { const a = R() * 6.2832, q = r + (R() - .5) * t; return [x + Math.cos(a) * q, y + (R() - .5) * t, z + Math.sin(a) * q]; };
+  const grid = (rad, st) => () => { const a = R() * 6.2832, q = Math.sqrt(R()) * rad; return [Math.round(Math.cos(a) * q / st) * st, -1.2, Math.round(Math.sin(a) * q / st) * st]; };
+  const dust = (rad) => () => { const a = R() * 6.2832, b = Math.acos(2 * R() - 1), q = rad * (.5 + .5 * R()); return [Math.sin(b) * Math.cos(a) * q, Math.cos(b) * q * .6, Math.sin(b) * Math.sin(a) * q]; };
+  const wall = (x0, z0, x1, z1, h) => () => { const k = R(); return [x0 + (x1 - x0) * k, -1.2 + R() * h, z0 + (z1 - z0) * k]; };
+  const slab = (x0, z0, x1, z1, y) => () => [x0 + (x1 - x0) * R(), y, z0 + (z1 - z0) * R()];
+  const boxs = (cx, cy, cz, w, h, d) => () => { const f = Math.floor(R() * 6), u = R() - .5, v = R() - .5; const p = f < 2 ? [(f ? .5 : -.5), u, v] : f < 4 ? [u, (f === 2 ? .5 : -.5), v] : [u, v, (f === 4 ? .5 : -.5)]; return [cx + p[0] * w, cy + p[1] * h, cz + p[2] * d]; };
+  function build(parts) { const tot = parts.reduce((a, p) => a + p.w, 0), pos = new Float32Array(N * 3), col = new Float32Array(N), rk = new Float32Array(N); let n = 0;
+    parts.forEach((p, j) => { const c = j === parts.length - 1 ? N - n : Math.min(N - n, Math.round(N * p.w / tot)); for (let q = 0; q < c; q++, n++) { const v = p.f(); pos.set(v, n * 3); col[n] = p.c; rk[n] = p.k || 0; } });
+    return { pos, col, rk }; }
+  const BX = 0, BZ = 0;
+  const A = [{ w: 46, f: grid(7, .22), c: 2 }, { w: 16, f: cyl(BX, .1, BZ, .035, 2.6), c: 0 }, { w: 3, f: cyl(BX, 1.5, BZ, .12, .12), c: 0 }];
+  for (let k = 1; k <= 8; k++) A.push({ w: 2.6 + k * .5, f: ring(BX, -1.18, BZ, .22 + k * .2, .028), c: k % 2 ? 0 : 1, k });
+  A.push({ w: 14, f: dust(7), c: 2 });
+  // a simplified lab, roof off: outer walls, a rated room, four benches, a yard with three units
+  const K = .82, line = (x0, y0, z0, x1, y1, z1) => () => { const k = R(), j = () => (R() - .5) * .025; return [(x0 + (x1 - x0) * k) * K + j(), y0 + (y1 - y0) * k + j(), (z0 + (z1 - z0) * k) * K + j()]; };
+  const Bp = [{ w: 5, f: () => { const v = slab(-3.2, -1.7, 3.2, 1.7, -1.2)(); return [v[0] * K, v[1], v[2] * K]; }, c: 2 }];
+  const room = (x0, z0, x1, z1, h, c, w) => { const y0 = -1.2, y1 = -1.2 + h; [[x0, z0, x1, z0], [x1, z0, x1, z1], [x1, z1, x0, z1], [x0, z1, x0, z0]].forEach(q => { Bp.push({ w: w, f: line(q[0], y1, q[1], q[2], y1, q[3]), c }, { w: w * .7, f: line(q[0], y0, q[1], q[2], y0, q[3]), c }, { w: w * .28, f: line(q[0], y0, q[1], q[0], y1, q[1]), c }, { w: w * .5, f: () => { const v = wall(q[0], q[1], q[2], q[3], h)(); return [v[0] * K, v[1], v[2] * K]; }, c: 2 }); }); };
+  room(-3.2, -1.7, 3.2, 1.7, .9, 1, 5); room(-.6, -1.2, 2.4, 1.0, .9, 0, 5); room(-3.2, -1.7, -2.0, .2, .9, 1, 2.2); room(-2.0, .2, -.6, 1.7, .9, 1, 2.2);
+  for (let k = 0; k < 4; k++) Bp.push({ w: 2.6, f: boxs((-.1 + k * .62) * K, -.98, -.2 * K, .26, .44, .52), c: 0 });
+  for (let k = 0; k < 3; k++) Bp.push({ w: 2.6, f: boxs((.6 + k * .9) * K, -.9, 2.3 * K, .46, .6, .38), c: 1 });
+  Bp.push({ w: 10, f: grid(7.5, .3), c: 2 }, { w: 6, f: dust(7), c: 2 });
+  const sA = build(A); seed = 23; const sB = build(Bp);
+  { let s2 = 5; const S = () => { s2 = (s2 * 1664525 + 1013904223) >>> 0; return s2 / 4294967296; }; for (let a = N - 1; a > 0; a--) { const b = Math.floor(S() * (a + 1)); for (let k = 0; k < 3; k++) { const t = sB.pos[a * 3 + k]; sB.pos[a * 3 + k] = sB.pos[b * 3 + k]; sB.pos[b * 3 + k] = t; } const t = sB.col[a]; sB.col[a] = sB.col[b]; sB.col[b] = t; } }
+  const g = new THREE.BufferGeometry(), sd = new Float32Array(N); for (let i = 0; i < N; i++) sd[i] = R();
+  g.setAttribute('position', new THREE.BufferAttribute(sA.pos, 3)); g.setAttribute('pb', new THREE.BufferAttribute(sB.pos, 3)); g.setAttribute('ca', new THREE.BufferAttribute(sA.col, 1)); g.setAttribute('cb', new THREE.BufferAttribute(sB.col, 1)); g.setAttribute('rk', new THREE.BufferAttribute(sA.rk, 1)); g.setAttribute('seed', new THREE.BufferAttribute(sd, 1)); g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 20);
+  const mat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, uniforms: { uP: { value: 0 }, uT: { value: 0 }, uPix: { value: 1 }, uKeys: { value: 0 }, uPulse: { value: 2 } },
+    vertexShader: `attribute vec3 pb; attribute float ca, cb, rk, seed; uniform float uP,uT,uPix,uKeys,uPulse; varying vec3 vC;
+      vec3 tint(float c){ return c<0.5? vec3(1.0,0.72,0.30) : vec3(0.10,0.80,0.52); }
+      void main(){ float k = smoothstep(0.0,1.0, clamp((uP - seed*0.4)/0.6, 0.0, 1.0)); float w = sin(k*3.14159);
+        vec3 p = mix(position, pb, k); p += w * vec3(sin(seed*40.0+uT*0.7), cos(seed*31.0+uT*0.6), sin(seed*17.0-uT*0.8)) * 0.9; p += 0.012 * vec3(sin(uT*1.3+seed*90.0), cos(uT*1.1+seed*70.0), sin(uT*0.9+seed*50.0));
+        float da = ca>1.5?0.38:1.0, db = cb>1.5?0.38:1.0; float lit = rk<0.5 ? 1.0 : (rk <= uKeys + 0.5 ? 1.7 : 0.16);
+        vC = mix(tint(ca)*da*lit, tint(cb)*db, k) * (0.75 + 0.5*fract(seed*7.3));
+        float band = exp(-pow((length(p) - uPulse*7.0)*1.6, 2.0)) * (1.0 - smoothstep(0.0, 1.0, uPulse)); vC *= 1.0 + 2.4*band;
+        vec4 mv = modelViewMatrix * vec4(p,1.0); gl_Position = projectionMatrix * mv; gl_PointSize = 4.8 * uPix * (1.0 + 1.4*w) / -mv.z; }`,
+    fragmentShader: `precision mediump float; varying vec3 vC; void main(){ float a = smoothstep(0.5,0.0,length(gl_PointCoord-0.5)); gl_FragColor = vec4(vC*a*0.95, a*0.95); }` });
+  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(34, 1, .1, 100); scene.add(new THREE.Points(g, mat));
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, small ? 1.5 : 2)); renderer.setClearColor(0x000000, 1);
+  const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(4, 4, { type: THREE.UnsignedByteType })); composer.addPass(new RenderPass(scene, camera)); const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), small ? 1.0 : 1.25, .6, .12); composer.addPass(bloom);
+  let P = 0, tU = -1, dead = false, cb = null, bar = null, keysT = -1e9; const DUR = 1.9, HOLD = 1.6;
+  function size() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w < h ? 56 : 34; if (w > h * 1.25) camera.setViewOffset(w, h, -w * .17 * (1 - P), h * .1 * P, w, h); else camera.setViewOffset(w, h, 0, h * .14, w, h); camera.updateProjectionMatrix(); mat.uniforms.uPix.value = renderer.getPixelRatio() * h / 1080 * 3.2; composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(w, h); }
+  size(); addEventListener('resize', size);
+  const ease = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  function finish() { if (dead) return; dead = true; cv.style.opacity = 0; const op = document.getElementById('opening'); op.style.opacity = 0; const f = cb; cb = null; setTimeout(() => { if (f) f(); FX.stop(); }, 450); }
+  function frame(now) { if (dead && !cb && !cv.isConnected) return; requestAnimationFrame(frame); if (document.hidden) return; const t = now / 1000;
+    if (tU >= 0) { const e = t - tU; P = ease(Math.min(1, e / DUR)); if (bar) bar.style.width = Math.min(100, e / (DUR + HOLD) * 100) + '%'; mat.uniforms.uPulse.value = Math.max(0, e - DUR * .8) / 1.4; bloom.strength = (small ? 1.0 : 1.25) + .7 * Math.sin(Math.min(1, e / DUR) * Math.PI); size(); if (e > DUR + HOLD) finish(); }
+    else mat.uniforms.uPulse.value = (now - keysT) / 1000 / 1.2 + (keysT < 0 ? 2 : 0);
+    mat.uniforms.uP.value = P; mat.uniforms.uT.value = t; const ang = (reduce ? .6 : .6 + Math.sin(t * .13) * .35) * (1 - P) + P * .55, d = 9.5 - P * 1.6 + (innerWidth < innerHeight ? P * 4.5 : 0), hgt = 3.2 + P * 1.4;
+    camera.position.set(Math.sin(ang) * d, hgt, Math.cos(ang) * d); camera.lookAt(0, -.4 - P * .5, P * .3); composer.render(); }
+  requestAnimationFrame(frame);
+  // sound: off unless the visitor turns it on
+  const snd = { ctx: null, on: false }, sb = document.getElementById('snd');
+  function ping(f, at, v, d) { const c = snd.ctx, o = c.createOscillator(), gn = c.createGain(); o.frequency.value = f; gn.gain.setValueAtTime(0, at); gn.gain.linearRampToValueAtTime(v, at + .008); gn.gain.exponentialRampToValueAtTime(.0001, at + d); o.connect(gn); gn.connect(c.destination); o.start(at); o.stop(at + d + .05); }
+  sb.addEventListener('click', () => { snd.on = !snd.on; if (snd.on && !snd.ctx) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) snd.ctx = new AC(); else snd.on = false; } sb.setAttribute('aria-pressed', snd.on ? 'true' : 'false'); sb.textContent = snd.on ? 'Sound on' : 'Sound off'; if (snd.on) ping(880, snd.ctx.currentTime, .08, .5); });
+  FX.ok = !reduce;
+  FX.keys = (n) => { const k = Math.min(8, n); if (k > mat.uniforms.uKeys.value && snd.on && snd.ctx) ping(520 + k * 70, snd.ctx.currentTime, .05, .25); mat.uniforms.uKeys.value = k; };
+  FX.unlock = (done, barEl, skipEl) => { cb = done; bar = barEl; tU = performance.now() / 1000; mat.uniforms.uKeys.value = 8; if (skipEl) skipEl.onclick = finish;
+    if (snd.on && snd.ctx) { const c = snd.ctx, t = c.currentTime, b = c.createBuffer(1, c.sampleRate * 2, c.sampleRate), dd = b.getChannelData(0); for (let i = 0; i < dd.length; i++) dd[i] = Math.random() * 2 - 1; const n = c.createBufferSource(); n.buffer = b; const bp = c.createBiquadFilter(), gn = c.createGain(); bp.type = 'bandpass'; bp.Q.value = 1.4; bp.frequency.setValueAtTime(260, t); bp.frequency.exponentialRampToValueAtTime(3400, t + .9); bp.frequency.exponentialRampToValueAtTime(520, t + 1.9); gn.gain.setValueAtTime(0, t); gn.gain.linearRampToValueAtTime(.2, t + .5); gn.gain.exponentialRampToValueAtTime(.0001, t + 2); n.connect(bp); bp.connect(gn); gn.connect(c.destination); n.start(t); n.stop(t + 2); ping(220, t + 1.55, .16, 2.4); ping(330, t + 1.55, .07, 1.8); } };
+  FX.stop = () => { dead = true; cb = null; removeEventListener('resize', size); try { renderer.dispose(); g.dispose(); mat.dispose(); renderer.forceContextLoss(); } catch (e) {} cv.remove(); };
+  FX.state = () => ({ P, tU, dead });
+}
+window.dispatchEvent(new Event('z1fx'));
+</script>
 <script>
 (function(){
 var BASE=(function(){var p=location.pathname;if(p.slice(-1)==='/')return p;var l=p.split('/').pop();return l.indexOf('.')>=0?p.slice(0,p.length-l.length):p+'/';})();
@@ -230,11 +314,16 @@ function unlock(code,quiet){
   document.getElementById('go').disabled=true;if(!quiet)err.textContent='Opening…';
   derive(code).then(function(k){KEY=k;return grab('c.txt');}).then(function(buf){
     C=JSON.parse(new TextDecoder().decode(buf));store('z1p-code',code);
-    gate.hidden=true;app.hidden=false;document.getElementById('proj').textContent=C.project+', '+C.address;route();
-  }).catch(function(e){KEY=null;document.getElementById('go').disabled=false;
+    document.getElementById('proj').textContent=C.project+', '+C.address;
+    var done=function(){gate.hidden=true;document.getElementById('gtop').hidden=true;document.getElementById('opening').hidden=true;app.hidden=false;route();};
+    var seenU=false;try{seenU=sessionStorage.getItem('z1-unlock')==='1';sessionStorage.setItem('z1-unlock','1');}catch(e){}
+    if(quiet||seenU||!window.Z1FX||!window.Z1FX.ok){if(window.Z1FX)window.Z1FX.stop();else{var cvx=document.getElementById('fx');if(cvx)cvx.remove();}done();}
+    else{gate.classList.add('out');var op=document.getElementById('opening');op.hidden=false;document.getElementById('openh').textContent='Opening '+C.sheets.length+' sheets';window.Z1FX.unlock(done,document.getElementById('openbar'),document.getElementById('skip'));}
+  }).catch(function(e){KEY=null;document.getElementById('go').disabled=false;if(window.Z1FX)window.Z1FX.keys(0);
     err.textContent=quiet?'':(e&&e.message==='load'?'The plan set could not be loaded. Check your connection and try again.':'That code did not open the plan set. Check it and try again.');});
 }
 document.getElementById('gateform').addEventListener('submit',function(e){e.preventDefault();var v=document.getElementById('code').value;if(!v.trim()){err.textContent='Enter the access code.';return;}unlock(v);});
+document.getElementById('code').addEventListener('input',function(e){err.textContent='';if(window.Z1FX)window.Z1FX.keys(e.target.value.length);});
 var saved=store('z1p-code');if(saved){document.getElementById('code').value=saved;unlock(saved,true);}
 
 function sheet(id){for(var i=0;i<C.sheets.length;i++)if(C.sheets[i].id===id)return C.sheets[i];return null;}
