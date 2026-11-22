@@ -76,6 +76,8 @@ header.top .wrap{display:flex;align-items:center;gap:14px;padding-block:10px}
 header.top a.home{font-weight:800;text-decoration:none;color:var(--ink);font-size:17px}
 header.top .proj{color:var(--mut);font-size:14px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
 header.top a.all{font-weight:650;white-space:nowrap}
+header.top a.site{font-weight:650;white-space:nowrap;text-decoration:none;color:var(--ink);border:1.5px solid var(--line);border-radius:3px;padding:6px 11px;font-size:14px}
+@media (max-width:700px){header.top .proj{display:none}header.top a.home{margin-right:auto}}
 
 main{padding-block:26px 60px}
 .sheet-head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 22px;margin-bottom:22px}
@@ -194,7 +196,7 @@ h2.sec{font-size:clamp(30px,5vw,48px);margin-top:10px}
 <body>
 
 <canvas id="fx" aria-hidden="true"></canvas>
-<div class="gtop wrap" id="gtop"><b>Z1 Power Labs <span>/ Z1P-CL-01</span></b><a class="gh" href="../">All sites</a><button class="gh" type="button" id="snd" aria-pressed="false">Sound off</button></div>
+<div class="gtop wrap" id="gtop"><b>Z1 Power Labs <span>/ Z1P-CL-01</span></b><a class="gh" href="../">&#8592; Home</a><button class="gh" type="button" id="snd" aria-pressed="false">Sound off</button></div>
 <div id="gate" class="wrap">
   <form id="gateform" autocomplete="off">
     <div class="kick">Z1P-CL-01</div>
@@ -211,6 +213,7 @@ h2.sec{font-size:clamp(30px,5vw,48px);margin-top:10px}
 
 <div id="app" hidden>
   <header class="top"><div class="wrap">
+    <a class="site" href="../" aria-label="Z1 Power Labs home">&#8592; Z1 Power Labs</a>
     <a class="home" href="#home">Plan room</a>
     <span class="proj" id="proj"></span>
     <a class="all" href="#sheets">All sheets</a>
@@ -447,6 +450,7 @@ function pageSheet(s){
   img(s.id).then(function(u){im.src=u;});
   full.appendChild($('h3',{text:s.ex?'The full sheet':'The sheet'}));full.appendChild(btn);full.appendChild($('p',{class:'note',text:C.caveat}));view.appendChild(full);
   var i=C.sheets.indexOf(s),p=C.sheets[i-1],n=C.sheets[i+1];
+  view.appendChild($('p',{class:'note'},$('a',{href:'../',text:'Back to Z1 Power Labs home'})));
   view.appendChild($('div',{class:'nav2'},p?$('a',{class:'btn ghost',href:'#'+p.id,text:'Previous: '+p.id+' '+p.title}):$('span'),n?$('a',{class:'btn ghost',href:'#'+n.id,text:'Next: '+n.id+' '+n.title}):$('span')));
 }
 function pageHome(toSheets){
