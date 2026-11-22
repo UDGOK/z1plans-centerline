@@ -44,7 +44,9 @@ a{color:var(--green)}
 #still{object-fit:cover}
 .pad{padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px))}
 header{position:fixed;left:0;right:0;top:0;display:flex;align-items:center;gap:14px;padding-top:calc(18px + env(safe-area-inset-top,0px));z-index:25}
-header .mark{font-weight:800;font-size:22px;margin-right:auto}
+header .mark{font-weight:800;font-size:20px;margin-right:auto;display:flex;align-items:flex-end;gap:10px}
+header .mark img{height:34px;width:auto;display:block}
+header .mark span{color:var(--mut);font-weight:600;font-size:15px;padding-bottom:1px}
 .ghost{background:rgba(4,6,10,.5);border:1.5px solid var(--line);border-radius:3px;padding:9px 15px;font-weight:650;font-size:15px}
 .ghost[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 /* enter screen */
@@ -70,6 +72,16 @@ header .mark{font-weight:800;font-size:22px;margin-right:auto}
 #rail button i{display:block;width:22px;height:3px;background:var(--line);transition:width .3s,background .3s}
 #rail button[aria-current="true"]{color:var(--ink)}
 #rail button[aria-current="true"] i{width:44px;background:var(--amber)}
+/* what we do */
+#about{position:fixed;right:0;top:0;bottom:0;z-index:7;width:min(600px,100vw);padding-top:calc(96px + env(safe-area-inset-top,0px));padding-bottom:calc(30px + env(safe-area-inset-bottom,0px));background:linear-gradient(to left,rgba(4,6,10,.94) 0%,rgba(4,6,10,.82) 75%,rgba(4,6,10,0) 100%);overflow:auto;transition:opacity .4s, transform .4s}
+#about.off{opacity:0;transform:translateX(24px);pointer-events:none}
+#about .in{margin-left:auto;max-width:460px}
+#about h2{font-size:clamp(48px,6vw,88px);margin:0 0 18px}
+.area{border-top:1px solid var(--line);padding:14px 0}
+.area b{font-family:var(--display);font-stretch:62%;font-weight:800;font-size:30px;display:block;line-height:1}
+.area span{color:var(--mut);font-size:16px;display:block;margin-top:6px}
+#about .more a{font-weight:650}
+@media (max-width:700px){#about{background:rgba(4,6,10,.94)}}
 /* sites menu */
 #sites{position:fixed;left:0;top:0;bottom:0;z-index:6;width:min(560px,100vw);padding-top:calc(96px + env(safe-area-inset-top,0px));padding-bottom:calc(30px + env(safe-area-inset-bottom,0px));background:linear-gradient(to right,rgba(4,6,10,.9) 0%,rgba(4,6,10,.7) 70%,rgba(4,6,10,0) 100%);overflow:auto;transition:opacity .5s, transform .5s}
 #sites.off{opacity:0;transform:translateX(-24px);pointer-events:none}
@@ -87,8 +99,8 @@ header .mark{font-weight:800;font-size:22px;margin-right:auto}
 .more{color:var(--mut);font-size:15px;margin-top:22px;max-width:40ch}
 .tag{position:fixed;z-index:4;transform:translate(-50%,-100%);pointer-events:none;font-weight:700;font-size:15px;background:rgba(4,6,10,.6);padding:4px 10px;border:1px solid var(--line);white-space:nowrap;transition:opacity .4s}
 .tag b{color:var(--amber);font-family:var(--display);font-stretch:125%;margin-right:8px}
-@media (max-width:700px){ header{gap:8px} header .mark{font-size:16px;white-space:nowrap} .ghost{padding:7px 8px;font-size:12px;white-space:nowrap} #sites{padding-top:calc(84px + env(safe-area-inset-top,0px))} .tag{display:none} #rail button span{display:none} #copy{padding-bottom:calc(11vh + env(safe-area-inset-bottom,0px))} .site .nm{font-size:36px} #sites{background:rgba(4,6,10,.82)} }
-body.cap header .ghost,body.cap #rail,body.cap #hint,body.cap #enter,body.cap #sites{display:none!important} body.cap #copy{transition:none}
+@media (max-width:700px){ header{gap:6px} header .mark img{height:24px} header .mark span{display:none} #btnFull{display:none} .ghost{padding:7px 8px;font-size:12px;white-space:nowrap} #sites{padding-top:calc(84px + env(safe-area-inset-top,0px))} .tag{display:none} #rail button span{display:none} #copy{padding-bottom:calc(11vh + env(safe-area-inset-bottom,0px))} .site .nm{font-size:36px} #sites{background:rgba(4,6,10,.82)} }
+body.cap #about,body.cap header .ghost,body.cap #rail,body.cap #hint,body.cap #enter,body.cap #sites{display:none!important} body.cap #copy{transition:none}
 @media (prefers-reduced-motion:reduce){ #enter,#copy,#sites,.tag{transition:none} }
 </style>
 </head>
@@ -97,7 +109,8 @@ body.cap header .ghost,body.cap #rail,body.cap #hint,body.cap #enter,body.cap #s
 <img id="still" src="home/poster.jpg" alt="A battery storage cabinet drawn in glowing particles, pulled apart into its layers." hidden>
 
 <header class="pad">
-  <span class="mark">Z1 Power Labs</span>
+  <span class="mark"><img src="home/logo-light.png" alt="SmartTec by Z1Power" width="720" height="169"><span>Labs</span></span>
+  <button class="ghost" id="btnAbout" type="button" aria-pressed="false">What we do</button>
   <button class="ghost" id="btnSites" type="button" aria-pressed="false">Sites</button>
   <button class="ghost" id="btnSound" type="button" aria-pressed="true" hidden>Sound on</button>
   <button class="ghost" id="btnFull" type="button" hidden>Full screen</button>
@@ -121,6 +134,11 @@ body.cap header .ghost,body.cap #rail,body.cap #hint,body.cap #enter,body.cap #s
   <div id="siteCard"></div>
   <p class="more">New sites appear here as they are added. Plan rooms open with an access code from Z1 Power.</p>
 </section>
+<section id="about" class="pad off" aria-labelledby="ah"><div class="in">
+  <h2 class="cond" id="ah">What we do</h2>
+  <div id="areas"></div>
+  <p class="more">The cabinet and shapes on this page are generic illustrations, not Z1 Power products.</p>
+</div></section>
 <div id="tags"></div>
 
 <script type="importmap">{"imports":{"three":"./home/three.module.min.js"}}</script>
@@ -137,6 +155,13 @@ const CH = [
   { k: 'Inverter', h: 'Power is converted', p: 'Inverter labs work on turning stored energy into usable power.' },
   { k: 'System', h: 'It becomes a system', p: 'Storage systems are assembled and tested as complete units.' },
   { k: 'Sites', h: '', p: '' },
+];
+const AREAS = [
+  ['Batteries', 'Cells, modules and packs on test.'],
+  ['Battery management', 'The electronics and firmware that watch every cell.'],
+  ['Inverters', 'Power conversion hardware.'],
+  ['Energy storage systems', 'Storage built and tested as complete units.'],
+  ['BESS', 'Battery energy storage at container scale.'],
 ];
 const SITES = [
   { id: 'Z1P-CL-01', name: 'Battery and BMS lab', types: 'Battery lab, BMS lab', href: 'centerline/', note: 'Plan room. Access code required.' },
@@ -261,14 +286,18 @@ CH.forEach((c, i) => { const b = document.createElement('button'); b.type = 'but
 function paint() { const c = CH[cur]; copy.querySelector('.n').textContent = cur < 4 ? '0' + (cur + 1) + ' / 04' : ''; copy.querySelector('h2').textContent = c.h; copy.querySelector('p').textContent = c.p; copy.classList.remove('swap');
   [...rail.children].forEach((b, i) => b.setAttribute('aria-current', i === cur ? 'true' : 'false')); const m = cur === 4; sites.classList.toggle('off', !m); btnSites.setAttribute('aria-pressed', m ? 'true' : 'false'); btnSites.textContent = m ? 'Back to the story' : 'Sites'; copy.hidden = m; if (cur > 0) hint.style.opacity = 0; }
 let lock = 0;
-function go(i) { i = Math.max(0, Math.min(4, i)); if (i === cur) return; fromP = P; target = i; tSwap = performance.now(); cur = i; lock = performance.now() + (reduce ? 200 : 900); copy.classList.add('swap'); setTimeout(paint, reduce ? 0 : 420); if (i !== 4) select(-1); sfxMorph(i); }
+function go(i) { i = Math.max(0, Math.min(4, i)); if (i === cur) return; about(false); fromP = P; target = i; tSwap = performance.now(); cur = i; lock = performance.now() + (reduce ? 200 : 900); copy.classList.add('swap'); setTimeout(paint, reduce ? 0 : 420); if (i !== 4) select(-1); sfxMorph(i); }
 let acc = 0;
-addEventListener('wheel', (e) => { if (entered === false) return; if (sites.contains(e.target) && sites.scrollHeight > sites.clientHeight + 2) return; if (performance.now() < lock) return; acc += e.deltaY; if (Math.abs(acc) > 60) { go(cur + (acc > 0 ? 1 : -1)); acc = 0; } }, { passive: true });
+addEventListener('wheel', (e) => { if (entered === false) return; if (sites.contains(e.target) && sites.scrollHeight > sites.clientHeight + 2) return; if (aboutEl.contains(e.target)) return; if (performance.now() < lock) return; acc += e.deltaY; if (Math.abs(acc) > 60) { go(cur + (acc > 0 ? 1 : -1)); acc = 0; } }, { passive: true });
 let ty0 = null; addEventListener('touchstart', (e) => { ty0 = e.touches[0].clientY; }, { passive: true });
-addEventListener('touchend', (e) => { if (ty0 == null || !entered) return; const dy = e.changedTouches[0].clientY - ty0; ty0 = null; if (Math.abs(dy) > 50 && performance.now() >= lock && !(cur === 4 && sites.contains(e.target))) go(cur + (dy < 0 ? 1 : -1)); }, { passive: true });
+addEventListener('touchend', (e) => { if (ty0 == null || !entered) return; const dy = e.changedTouches[0].clientY - ty0; ty0 = null; if (Math.abs(dy) > 50 && performance.now() >= lock && !aboutEl.contains(e.target) && !(cur === 4 && sites.contains(e.target))) go(cur + (dy < 0 ? 1 : -1)); }, { passive: true });
 addEventListener('keydown', (e) => { if (!entered) return; if (['ArrowDown', 'PageDown', ' ', 'ArrowRight'].includes(e.key) && !(e.target.closest && e.target.closest('button,a'))) { go(cur + 1); e.preventDefault(); } if (['ArrowUp', 'PageUp', 'ArrowLeft'].includes(e.key)) { go(cur - 1); e.preventDefault(); } });
 addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') { mouse[0] = e.clientX / innerWidth * 2 - 1; mouse[1] = e.clientY / innerHeight * 2 - 1; } });
-btnSites.addEventListener('click', () => go(cur === 4 ? 3 : 4));
+btnSites.addEventListener('click', () => { about(false); go(cur === 4 ? 3 : 4); });
+const aboutEl = $('about'), btnAbout = $('btnAbout'); AREAS.forEach(([n, d]) => { const r = document.createElement('div'); r.className = 'area'; const b = document.createElement('b'); b.textContent = n; const sp = document.createElement('span'); sp.textContent = d; r.append(b, sp); $('areas').append(r); });
+function about(on) { aboutEl.classList.toggle('off', !on); btnAbout.setAttribute('aria-pressed', on ? 'true' : 'false'); btnAbout.textContent = on ? 'Close' : 'What we do'; if (on) sfxTick(); }
+btnAbout.addEventListener('click', () => about(aboutEl.classList.contains('off')));
+addEventListener('keydown', (e) => { if (e.key === 'Escape') about(false); });
 // ---------- sites menu ----------
 const list = $('siteList'), card = $('siteCard'), tagBox = $('tags'); const tagEls = [];
 SITES.forEach((s, i) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'site'; const a = document.createElement('div'); a.className = 'id'; a.textContent = s.id; const n = document.createElement('div'); n.className = 'nm'; n.textContent = s.name; const t = document.createElement('div'); t.className = 'ty'; t.textContent = s.types; b.append(a, n, t);

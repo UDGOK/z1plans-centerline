@@ -51,7 +51,7 @@ h1,h2,h3,p{margin:0}
 #gate{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:calc(9vh + env(safe-area-inset-bottom,0px));background:linear-gradient(to right,rgba(6,9,11,.9),rgba(6,9,11,.45) 48%,rgba(6,9,11,0) 75%);transition:opacity .5s}
 #gate.out{opacity:0;pointer-events:none}
 #gate.wrap,.gtop.wrap,#opening.wrap{max-width:none;padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px))}
-@media (max-width:700px){.gtop b{font-size:16px}.gtop b span{display:none}.gh{font-size:13px;padding:7px 10px;white-space:nowrap}}
+@media (max-width:700px){.gtop b img{height:24px}.gtop b{font-size:16px}.gtop b span{display:none}.gh{font-size:13px;padding:7px 10px;white-space:nowrap}}
 #gate form{width:min(640px,100%)}
 #gate .kick{font-family:var(--display);font-stretch:125%;font-weight:800;color:var(--accent);font-size:17px}
 #gate h1{font-size:clamp(64px,13vw,150px);margin-top:6px}
@@ -60,7 +60,7 @@ h1,h2,h3,p{margin:0}
 #gate input{flex:1;min-width:0;border:2px solid var(--ink);background:rgba(6,9,11,.65);color:var(--ink);padding:15px 16px;border-radius:3px;font-size:20px}
 #gate .btn{font-size:18px;padding:15px 22px;background:var(--ink);color:var(--bg)}
 .gtop{position:fixed;left:0;right:0;top:0;z-index:3;display:flex;align-items:center;gap:12px;padding-top:calc(18px + env(safe-area-inset-top,0px))}
-.gtop b{font-size:20px;font-weight:800;margin-right:auto}.gtop b span{font-weight:500;color:var(--mut);font-size:15px}
+.gtop b{font-size:20px;font-weight:800;margin-right:auto;display:flex;align-items:flex-end;gap:10px}.gtop b img{height:32px;width:auto;display:block}.gtop b span{font-weight:500;color:var(--mut);font-size:15px}
 .gh{background:rgba(6,9,11,.5);color:var(--ink);border:1.5px solid var(--line);border-radius:3px;padding:8px 13px;font-weight:650;font-size:14px;text-decoration:none}
 #opening{position:fixed;left:0;right:0;bottom:0;z-index:4;padding-bottom:calc(8vh + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,rgba(6,9,11,.85),rgba(6,9,11,0));padding-top:120px;transition:opacity .5s}
 #opening .kick{font-family:var(--display);font-stretch:125%;font-weight:800;color:var(--accent);font-size:17px}
@@ -77,7 +77,7 @@ header.top a.home{font-weight:800;text-decoration:none;color:var(--ink);font-siz
 header.top .proj{color:var(--mut);font-size:14px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
 header.top a.all{font-weight:650;white-space:nowrap}
 header.top a.site{font-weight:650;white-space:nowrap;text-decoration:none;color:var(--ink);border:1.5px solid var(--line);border-radius:3px;padding:6px 11px;font-size:14px}
-@media (max-width:700px){header.top .proj{display:none}header.top a.home{margin-right:auto}}
+@media (max-width:700px){header.top .proj,header.top a.home{display:none}header.top a.site{margin-right:auto}header.top .wrap{gap:12px}header.top a.all{font-size:14px}}
 
 main{padding-block:26px 60px}
 .sheet-head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 22px;margin-bottom:22px}
@@ -138,6 +138,20 @@ main{padding-block:26px 60px}
 .pmore .pk{font-size:13px;color:var(--mut);margin-top:8px}
 .pmore p{font-size:15px;line-height:1.45}
 
+.old{border:2px solid var(--red);background:var(--red-bg);padding:14px 16px;margin-bottom:24px;max-width:70ch}
+.old b{display:block;font-size:18px}
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 14px}
+.tools .search{flex:1 1 320px;margin:0}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.results{margin-bottom:10px}
+.hitrow{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;padding:12px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.hitrow .wide{font-size:20px}
+.hitrow .snip{display:block;color:var(--mut);font-size:14px;margin-top:3px}
+.contacts{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin:14px 0 30px}
+.ct{border:1px solid var(--line);background:var(--panel);padding:14px 16px}
+.ct .sel{user-select:all;margin-top:4px}
+.pop .chips a{border:1px solid var(--line);border-radius:99px;padding:3px 9px;font-size:13px;font-weight:650;text-decoration:none}
+
 /* checklist */
 .rows{display:grid;gap:0;border-top:2px solid var(--ink);margin-top:12px}
 .rowc{display:grid;grid-template-columns:104px minmax(0,1fr) minmax(0,1.3fr) minmax(0,1.6fr);gap:6px 18px;padding:13px 0;border-bottom:1px solid var(--line);align-items:start}
@@ -196,7 +210,7 @@ h2.sec{font-size:clamp(30px,5vw,48px);margin-top:10px}
 <body>
 
 <canvas id="fx" aria-hidden="true"></canvas>
-<div class="gtop wrap" id="gtop"><b>Z1 Power Labs <span>/ Z1P-CL-01</span></b><a class="gh" href="../">&#8592; Home</a><button class="gh" type="button" id="snd" aria-pressed="false">Sound off</button></div>
+<div class="gtop wrap" id="gtop"><b><img src="../home/logo-light.png" alt="SmartTec by Z1Power" width="720" height="169"> <span>/ Z1P-CL-01</span></b><a class="gh" href="../">&#8592; Home</a><button class="gh" type="button" id="snd" aria-pressed="false">Sound off</button></div>
 <div id="gate" class="wrap">
   <form id="gateform" autocomplete="off">
     <div class="kick">Z1P-CL-01</div>
@@ -207,6 +221,7 @@ h2.sec{font-size:clamp(30px,5vw,48px);margin-top:10px}
       <button class="btn" type="submit" id="go">Open the plans</button>
     </div>
     <div id="err" role="alert"></div>
+    <p style="font-size:15px;margin-top:10px">No code? Ask your Z1 Power contact for one.</p>
   </form>
 </div>
 <div id="opening" class="wrap" hidden><div class="kick">Code accepted</div><h2 class="cond" id="openh">Opening the plans</h2><div class="bar"><i id="openbar"></i></div><button class="gh" type="button" id="skip">Skip</button></div>
@@ -216,6 +231,7 @@ h2.sec{font-size:clamp(30px,5vw,48px);margin-top:10px}
     <a class="site" href="../" aria-label="Z1 Power Labs home">&#8592; Z1 Power Labs</a>
     <a class="home" href="#home">Plan room</a>
     <span class="proj" id="proj"></span>
+    <a class="all" href="#contacts">Contact</a>
     <a class="all" href="#sheets">All sheets</a>
   </div></header>
   <main class="wrap" id="view"></main>
@@ -329,13 +345,18 @@ document.getElementById('gateform').addEventListener('submit',function(e){e.prev
 document.getElementById('code').addEventListener('input',function(e){err.textContent='';if(window.Z1FX)window.Z1FX.keys(e.target.value.length);});
 var saved=store('z1p-code');if(saved){document.getElementById('code').value=saved;unlock(saved,true);}
 
+var ENTRY=null;
+function pdfBlob(){if(!IMG._pdf)IMG._pdf=grab('set.txt').then(function(b){return URL.createObjectURL(new Blob([b],{type:'application/pdf'}));});return IMG._pdf;}
+function dlBtn(){var b=$('button',{class:'btn ghost',type:'button',text:'Download the full set (PDF)',onclick:function(){b.disabled=true;b.textContent='Preparing the PDF…';pdfBlob().then(function(u){var a=document.createElement('a');a.href=u;a.download=C.pdf||'plan-set.pdf';document.body.appendChild(a);a.click();a.remove();b.disabled=false;b.textContent='Downloaded. Download again';}).catch(function(){b.disabled=false;b.textContent='The PDF could not be loaded. Try again';});}});return b;}
 function sheet(id){for(var i=0;i<C.sheets.length;i++)if(C.sheets[i].id===id)return C.sheets[i];return null;}
 function route(){
   if(!C)return;if(timer){clearInterval(timer);timer=null;}
   var h=(location.hash||'').replace('#','');view.textContent='';
+  var m=/^(.*?)-r(\d\d)$/i.exec(h),rev=m?m[2]:'00';if(m)h=m[1];
+  if(ENTRY===null)ENTRY={id:h.toUpperCase(),rev:rev};
   var s=sheet(h.toUpperCase());
-  if(s)pageSheet(s);else pageHome(h==='sheets');
-  if(h!=='sheets')window.scrollTo(0,0);
+  if(s)pageSheet(s);else if(h==='responses')pageLog();else pageHome(h==='sheets'||h==='contacts');
+  if(h!=='sheets'&&h!=='contacts')window.scrollTo(0,0);
 }
 window.addEventListener('hashchange',route);
 
@@ -356,16 +377,20 @@ function refs(t){if(!t.refs||!t.refs.length)return null;var d=$('div',{class:'re
 function exHead(ex){return $('div',{class:'ex-head'},$('h2',{class:'cond',text:ex.head}),$('p',{text:ex.intro}));}
 
 function exTopics(ex,sid,play){
-  var box=$('section',{class:'ex'}),st=stage(sid,ex.crop),side=$('div',{class:'side'}),ul=$('ol',{class:'topics'}),cur=-1,items=[],bar,pb,playing=false;
+  var box=$('section',{class:'ex'}),left=$('div',{class:'holder'}),st=stage(sid,ex.crop),side=$('div',{class:'side'}),ul=$('ol',{class:'topics'}),cur=-1,items=[],bar,pb,playing=false;
+  function pop(i,show){var o=left.querySelector('.pop');if(o)o.remove();var t=ex.topics[i];if(play||!show||!t.marks||!t.marks.length)return;var m=t.marks[0],c=ex.crop,x=(m[0]-c[0])/(c[2]-c[0])*100,y=(m[1]-c[1])/(c[3]-c[1])*100;
+    var p=$('div',{class:'pop',role:'dialog','aria-label':t.t});if(x>52){p.style.right=(100-x)+'%';p.className+=' r';}else p.style.left=x+'%';if(y>55){p.style.bottom=(100-y)+'%';p.className+=' b';}else p.style.top=y+'%';
+    p.appendChild($('button',{class:'pclose',type:'button','aria-label':'Close',text:'\u00D7',onclick:function(){p.remove();}}));p.appendChild($('div',{class:'ph'},$('span',{class:'pt',text:t.t})));p.appendChild($('p',{class:'pd',text:t.d}));
+    if(t.refs&&t.refs.length){var d=$('div',{class:'chips'});t.refs.forEach(function(r){d.appendChild($('a',{href:'#'+r,text:'Sheet '+r}));});p.appendChild(d);}left.appendChild(p);}
   function sel(i){cur=i;items.forEach(function(li,j){li.className=j===i?'on':'';li.firstChild.setAttribute('aria-expanded',j===i?'true':'false');});
     st.rings(ex.topics[i].marks||[],(ex.topics[i].marks||[]).length>3);if(bar)bar.style.width=((i+1)/ex.topics.length*100)+'%';}
   function stop(){playing=false;if(timer){clearInterval(timer);timer=null;}if(pb){pb.textContent='▶';pb.setAttribute('aria-label','Play');}}
   ex.topics.forEach(function(t,i){
-    var b=$('button',{type:'button',onclick:function(){stop();sel(i);}},play?$('span',{class:'n',text:String(i+1)}):null,$('span',null,$('span',{class:'tt',text:t.t}),$('span',{class:'dd',text:t.d})));
+    var b=$('button',{type:'button',onclick:function(){stop();sel(i);pop(i,false);}},play?$('span',{class:'n',text:String(i+1)}):null,$('span',null,$('span',{class:'tt',text:t.t}),$('span',{class:'dd',text:t.d})));
     var li=$('li',null,b,refs(t));items.push(li);ul.appendChild(li);
-    (t.marks||[]).forEach(function(m){var p=st.pos(m),hb=$('button',{class:'hit',type:'button','aria-label':t.t,onclick:function(){stop();sel(i);}});hb.style.left=p[0];hb.style.top=p[1];st.appendChild(hb);});
+    (t.marks||[]).forEach(function(m){var p=st.pos(m),hb=$('button',{class:'hit',type:'button','aria-label':t.t,onclick:function(){stop();sel(i);pop(i,true);}});hb.style.left=p[0];hb.style.top=p[1];st.appendChild(hb);});
   });
-  var left=$('div',null,st);
+  left.appendChild(st);
   if(play){bar=$('i');pb=$('button',{type:'button','aria-label':'Play',text:'▶',onclick:function(){
       if(playing){stop();return;}playing=true;pb.textContent='❚❚';pb.setAttribute('aria-label','Pause');
       if(cur>=ex.topics.length-1)sel(0);
@@ -444,14 +469,23 @@ function pageSheet(s){
   document.title=s.id+' '+s.title;
   view.appendChild($('div',{class:'sheet-head'},$('div',{class:'wide sheet-no',text:s.id}),$('h1',{class:'sheet-title',text:s.title}),
     $('div',{class:'issue'},'Current issue',$('span',{text:'Issued '+C.issued+', revision '+C.rev}))));
+  if(ENTRY&&ENTRY.id===s.id&&ENTRY.rev!==C.rev)view.appendChild($('div',{class:'old',role:'status'},$('b',{text:'Your print is out of date.'}),' The code you scanned is from revision '+ENTRY.rev+'. This page shows the current issue, revision '+C.rev+', issued '+C.issued+'. Use the drawing below, not the paper copy.'));
   if(s.ex)view.appendChild(explainer(s.ex,s.id));
   var full=$('section',{class:'full'}),im=$('img',{alt:'Sheet '+s.id+', '+s.title});
   var btn=$('button',{class:'sheetbtn',type:'button','aria-label':'Open sheet '+s.id+' to zoom',onclick:function(){openViewer(s);}},im,$('span',{class:'hint',text:'Open to zoom'}));
   img(s.id).then(function(u){im.src=u;});
-  full.appendChild($('h3',{text:s.ex?'The full sheet':'The sheet'}));full.appendChild(btn);full.appendChild($('p',{class:'note',text:C.caveat}));view.appendChild(full);
+  full.appendChild($('h3',{text:s.ex?'The full sheet':'The sheet'}));full.appendChild(btn);full.appendChild($('p',{class:'note',text:C.caveat}));full.appendChild($('div',{style:'margin-top:14px'},dlBtn()));view.appendChild(full);
   var i=C.sheets.indexOf(s),p=C.sheets[i-1],n=C.sheets[i+1];
   view.appendChild($('p',{class:'note'},$('a',{href:'../',text:'Back to Z1 Power Labs home'})));
   view.appendChild($('div',{class:'nav2'},p?$('a',{class:'btn ghost',href:'#'+p.id,text:'Previous: '+p.id+' '+p.title}):$('span'),n?$('a',{class:'btn ghost',href:'#'+n.id,text:'Next: '+n.id+' '+n.title}):$('span')));
+}
+function pageLog(){
+  document.title='Review comments and responses';
+  view.appendChild($('div',{class:'sheet-head'},$('h1',{class:'cond',style:'font-size:clamp(40px,7vw,84px)',text:'Review comments and responses'})));
+  var L=C.log||[];
+  if(!L.length){view.appendChild($('p',{class:'about',text:'No review comments have been received yet. When a reviewer sends comments, each one is listed here with the response and the sheets that changed.'}));}
+  else{var rows=$('div',{class:'rows'});L.forEach(function(r){var sh=$('div');(r.sheets||[]).forEach(function(id){sh.appendChild($('a',{href:'#'+id,text:id+' '}));});rows.appendChild($('div',{class:'rowc'},$('div',null,$('span',{class:'pill '+(r.done?'MEETS':'CONFIRM'),text:r.done?'Answered':'Open'})),$('div',{class:'it',text:r.from+', '+r.date}),$('div',null,$('span',{class:'lab',text:'Comment'}),r.comment),$('div',null,$('span',{class:'lab',text:'Response'}),r.response||'Response pending.',sh)));});view.appendChild(rows);}
+  view.appendChild($('p',{class:'note'},$('a',{href:'#sheets',text:'Back to all sheets'})));
 }
 function pageHome(toSheets){
   document.title='Z1P Plan Room';
@@ -459,11 +493,22 @@ function pageHome(toSheets){
   if(g2&&g2.ex)view.appendChild(explainer(g2.ex,'G-002'));
   var h=$('h2',{class:'cond sec',id:'sheets-list',text:'All '+C.sheets.length+' sheets'});view.appendChild(h);
   view.appendChild($('p',{class:'about',text:C.project+', '+C.address+'. Applicant: '+C.applicant+'. Issued '+C.issued+', revision '+C.rev+'. '+C.caveat}));
+  var q=$('input',{class:'search',id:'sheet-search',type:'search',placeholder:'Search every sheet, for example sprinkler or exit','aria-label':'Search every sheet'}),res=$('div',{class:'results'});
+  q.addEventListener('input',function(){var v=q.value.trim().toLowerCase();res.textContent='';if(v.length<2){grid.hidden=false;return;}grid.hidden=true;var n=0;
+    C.sheets.forEach(function(s){var hits=[];var t=s.txt||'',lt=t.toLowerCase(),i=lt.indexOf(v);while(i>=0&&hits.length<2){var a=Math.max(0,i-50),b=Math.min(t.length,i+v.length+70);hits.push((a>0?'…':'')+t.slice(a,b)+(b<t.length?'…':''));i=lt.indexOf(v,i+v.length+60);}
+      if(s.ex&&s.ex.topics)s.ex.topics.forEach(function(tp){if(hits.length<3&&(tp.t+' '+tp.d).toLowerCase().indexOf(v)>=0)hits.push(tp.t+': '+tp.d);});
+      if((s.id+' '+s.title).toLowerCase().indexOf(v)>=0&&!hits.length)hits.push(s.title);
+      if(!hits.length)return;n++;var a=$('a',{class:'hitrow',href:'#'+s.id},$('span',{class:'wide',text:s.id}),$('span',null,$('b',{text:s.title}),hits.map(function(h){return $('span',{class:'snip',text:h});}).reduce(function(d,e){d.appendChild(e);return d;},$('span'))));res.appendChild(a);});
+    if(!n)res.appendChild($('p',{class:'note',text:'Nothing on the sheets matches that. Try a shorter or different word.'}));});
+  view.appendChild($('div',{class:'tools'},q,dlBtn(),$('a',{class:'btn ghost',href:'#responses',text:'Review comments and responses'})));view.appendChild(res);
   var grid=$('div',{class:'grid'});
   C.sheets.forEach(function(s){var im=$('img',{alt:'',loading:'lazy'});img(s.id+'_t').then(function(u){im.src=u;});
     grid.appendChild($('a',{class:'card',href:'#'+s.id},$('div',{class:'th'},im),$('div',{class:'cx'},$('div',{class:'wide no',text:s.id}),$('div',{class:'ti',text:s.title}),s.ex?$('div',{class:'tag2',text:'With explainer'}):null)));});
   view.appendChild(grid);
-  if(toSheets&&h.scrollIntoView)h.scrollIntoView();
+  var ch=$('h2',{class:'cond sec',id:'contacts',text:'Who to contact'});view.appendChild(ch);var cg=$('div',{class:'contacts'});
+  (C.contacts||[]).forEach(function(c){var d=$('div',{class:'ct'},$('div',{class:'mut',text:c.role}),$('b',{text:c.name}));(c.lines||[]).forEach(function(l){d.appendChild($('div',{class:'sel',text:l}));});cg.appendChild(d);});view.appendChild(cg);
+  var hh=$('h2',{class:'cond sec',text:'Issues of this set'});view.appendChild(hh);(C.history||[]).forEach(function(x){view.appendChild($('p',{class:'about',style:'margin-bottom:6px',text:'Revision '+x.rev+', issued '+x.issued+'. '+x.note+(x.rev===C.rev?' Current.':'')}));});
+  if(toSheets&&h.scrollIntoView)(location.hash==='#contacts'?ch:h).scrollIntoView();
 }
 
 /* ---------- zoom viewer ---------- */
