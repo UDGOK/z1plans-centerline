@@ -67,7 +67,7 @@ header .mark{font-weight:800;font-size:22px;margin-right:auto}
 .more{color:var(--mut);font-size:15px;margin-top:22px;max-width:40ch}
 .tag{position:fixed;z-index:4;transform:translate(-50%,-100%);pointer-events:none;font-weight:700;font-size:15px;background:rgba(4,6,10,.6);padding:4px 10px;border:1px solid var(--line);white-space:nowrap;transition:opacity .4s}
 .tag b{color:var(--amber);font-family:var(--display);font-stretch:125%;margin-right:8px}
-@media (max-width:700px){ header .mark{font-size:18px;white-space:nowrap} .ghost{padding:8px 10px;font-size:13px;white-space:nowrap} #sites{padding-top:calc(84px + env(safe-area-inset-top,0px))} .tag{display:none} #rail button span{display:none} #copy{padding-bottom:calc(11vh + env(safe-area-inset-bottom,0px))} .site .nm{font-size:36px} #sites{background:rgba(4,6,10,.82)} }
+@media (max-width:700px){ header{gap:8px} header .mark{font-size:16px;white-space:nowrap} .ghost{padding:7px 8px;font-size:12px;white-space:nowrap} #sites{padding-top:calc(84px + env(safe-area-inset-top,0px))} .tag{display:none} #rail button span{display:none} #copy{padding-bottom:calc(11vh + env(safe-area-inset-bottom,0px))} .site .nm{font-size:36px} #sites{background:rgba(4,6,10,.82)} }
 @media (prefers-reduced-motion:reduce){ #enter,#copy,#sites,.tag{transition:none} }
 </style>
 </head>
@@ -78,6 +78,7 @@ header .mark{font-weight:800;font-size:22px;margin-right:auto}
 <header class="pad">
   <span class="mark">Z1 Power Labs</span>
   <button class="ghost" id="btnSites" type="button" aria-pressed="false">Sites</button>
+  <button class="ghost" id="btnSound" type="button" aria-pressed="true" hidden>Sound on</button>
   <button class="ghost" id="btnFull" type="button" hidden>Full screen</button>
 </header>
 
@@ -101,8 +102,12 @@ header .mark{font-weight:800;font-size:22px;margin-right:auto}
 </section>
 <div id="tags"></div>
 
+<script type="importmap">{"imports":{"three":"./home/three.module.min.js"}}</script>
 <script type="module">
-import * as THREE from './home/three.module.min.js';
+import * as THREE from 'three';
+import { EffectComposer } from './home/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from './home/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from './home/jsm/postprocessing/UnrealBloomPass.js';
 
 // ---------- content ----------
 const CH = [
@@ -150,10 +155,10 @@ function shape(i) {
 // ---------- renderer ----------
 let renderer, ok = true;
 try { renderer = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: false, alpha: false, powerPreference: 'high-performance' }); } catch (e) { ok = false; }
-let scene, camera, mat, glow, P = 0, target = 0, cur = 0, t0 = performance.now(), mouse = [0, 0], mEase = [0, 0], running = true, sel = -1;
+let scene, camera, mat, composer, bloomPass, P = 0, target = 0, cur = 0, t0 = performance.now(), mouse = [0, 0], mEase = [0, 0], running = true, sel = -1;
 const CAM = [[5.6, .5, 0, 0], [6.2, .9, 0, 0], [6.0, .9, 0, -.1], [8.8, 1.5, 0, -.1], [9.5, 3.6, .9, -.4]]; // distance, height, target x, target y
 if (ok) {
-  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); renderer.setClearColor(0x04060a, 1);
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, small ? 1.5 : 2)); renderer.setClearColor(0x000000, 1);
   scene = new THREE.Scene(); camera = new THREE.PerspectiveCamera(34, 1, .1, 100);
   const g = new THREE.BufferGeometry(); const shapes = [0, 1, 2, 3, 4].map(shape);
   shapes.forEach((s, i) => g.setAttribute('p' + i, new THREE.BufferAttribute(s.pos, 3)));
@@ -162,7 +167,7 @@ if (ok) {
   for (let i = 0; i < N; i++) { for (let k = 0; k < 4; k++) c4[i * 4 + k] = shapes[k].col[i]; c5[i] = shapes[4].col[i]; sd[i] = S(); }
   g.setAttribute('ca', new THREE.BufferAttribute(c4, 4)); g.setAttribute('cb', new THREE.BufferAttribute(c5, 1)); g.setAttribute('seed', new THREE.BufferAttribute(sd, 1));
   g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 20);
-  const vs = `attribute vec3 p0,p1,p2,p3,p4; attribute vec4 ca; attribute float cb, seed; uniform float uP,uT,uSize,uPix,uSel; uniform vec3 uSelPos; varying vec3 vC; varying float vA;
+  const vs = `attribute vec3 p0,p1,p2,p3,p4; attribute vec4 ca; attribute float cb, seed; uniform float uP,uT,uSize,uPix,uSel,uPulse; uniform vec3 uSelPos; varying vec3 vC; varying float vA;
     vec3 tint(float c){ return c<0.5? vec3(1.0,0.72,0.30) : vec3(0.10,0.80,0.52); }
     void main(){ float i=floor(min(uP,3.999)); float f=uP-i;
       vec3 A = i<0.5?p0 : i<1.5?p1 : i<2.5?p2 : p3; vec3 B = i<0.5?p1 : i<1.5?p2 : i<2.5?p3 : p4;
@@ -171,39 +176,70 @@ if (ok) {
       vec3 p = mix(A,B,k);
       p += w * vec3(sin(seed*40.0+uT*0.7), cos(seed*31.0+uT*0.6), sin(seed*17.0-uT*0.8)) * 0.7;
       p += 0.012 * vec3(sin(uT*1.3+seed*90.0), cos(uT*1.1+seed*70.0), sin(uT*0.9+seed*50.0));
-      float dimA = a>1.5?0.5:1.0, dimB = b>1.5?0.5:1.0; vC = mix(tint(a)*dimA, tint(b)*dimB, k) * (0.75 + 0.5*fract(seed*7.3));
+      float dimA = a>1.5?0.38:1.0, dimB = b>1.5?0.38:1.0; vC = mix(tint(a)*dimA, tint(b)*dimB, k) * (0.75 + 0.5*fract(seed*7.3));
+      float band = exp(-pow((length(p) - uPulse*7.0)*1.6, 2.0)) * (1.0 - smoothstep(0.0, 1.0, uPulse)); vC *= 1.0 + 2.4*band;
       float near = 1.0 - smoothstep(0.0, 1.6, distance(p.xz, uSelPos.xz)); vC *= 1.0 + uSel*near*1.6;
       vec4 mv = modelViewMatrix * vec4(p,1.0); gl_Position = projectionMatrix * mv;
       gl_PointSize = uSize * uPix * (1.0 + 1.4*w) / -mv.z; vA = 1.0; }`;
   const fs = `precision mediump float; varying vec3 vC; varying float vA; uniform float uAlpha; void main(){ float d = length(gl_PointCoord-0.5); float a = smoothstep(0.5,0.0,d); gl_FragColor = vec4(vC*a*uAlpha, a*uAlpha); }`;
-  const U = () => ({ uP: { value: 0 }, uT: { value: 0 }, uSize: { value: small ? 6.5 : 5.6 }, uPix: { value: 1 }, uAlpha: { value: .95 }, uSel: { value: 0 }, uSelPos: { value: new THREE.Vector3(99, 0, 99) } });
+  const U = () => ({ uP: { value: 0 }, uT: { value: 0 }, uSize: { value: small ? 5.6 : 4.8 }, uPix: { value: 1 }, uAlpha: { value: .95 }, uSel: { value: 0 }, uPulse: { value: 2 }, uSelPos: { value: new THREE.Vector3(99, 0, 99) } });
   mat = new THREE.ShaderMaterial({ vertexShader: vs, fragmentShader: fs, uniforms: U(), transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending });
   scene.add(new THREE.Points(g, mat));
-  glow = new THREE.ShaderMaterial({ vertexShader: vs, fragmentShader: fs, uniforms: U(), transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending });
-  glow.uniforms.uSize.value = small ? 64 : 58; glow.uniforms.uAlpha.value = .05; const gp = new THREE.Points(g, glow); gp.geometry = g.clone(); gp.geometry.setDrawRange(0, Math.floor(N * .22)); scene.add(gp);
+  composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(4, 4, { type: THREE.UnsignedByteType })); composer.addPass(new RenderPass(scene, camera)); bloomPass = new UnrealBloomPass(new THREE.Vector2(256, 256), small ? 1.0 : 1.25, .6, .12); composer.addPass(bloomPass);
   resize(); addEventListener('resize', resize);
 } else { $('gl').hidden = true; $('still').hidden = false; }
-function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w < h ? 56 : 34; if (w > h * 1.25) camera.setViewOffset(w, h, -w * .15, -h * .03, w, h); else camera.setViewOffset(w, h, 0, h * .12, w, h); camera.updateProjectionMatrix(); const px = renderer.getPixelRatio() * h / 1080 * 3.2; mat.uniforms.uPix.value = px; glow.uniforms.uPix.value = px; }
+function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w < h ? 56 : 34; if (w > h * 1.25) camera.setViewOffset(w, h, -w * .15, -h * .03, w, h); else camera.setViewOffset(w, h, 0, h * .12, w, h); camera.updateProjectionMatrix(); const px = renderer.getPixelRatio() * h / 1080 * 3.2; mat.uniforms.uPix.value = px; composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(w, h); }
 const ease = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; const lerp = (a, b, k) => a + (b - a) * k;
 let fromP = 0, tSwap = -1e9; const DURM = reduce ? 0.01 : 1.9;
 function frame(now) {
   if (!running) return; requestAnimationFrame(frame); if (!ok) return;
   const t = (now - t0) / 1000, k = Math.max(0, Math.min(1, (now - tSwap) / 1000 / DURM)); P = Math.max(0, Math.min(4, lerp(fromP, target, ease(k))));
-  mat.uniforms.uP.value = P; mat.uniforms.uT.value = t; glow.uniforms.uP.value = P; glow.uniforms.uT.value = t;
+  mat.uniforms.uP.value = P; mat.uniforms.uT.value = t; mat.uniforms.uPulse.value = Math.max(0, (now - tSwap) / 1000 - DURM * .8) / 1.6; if (bloomPass) bloomPass.strength = (small ? 1.0 : 1.25) + .6 * Math.sin(Math.min(1, k) * Math.PI);
   mEase[0] += (mouse[0] - mEase[0]) * .05; mEase[1] += (mouse[1] - mEase[1]) * .05;
   const i = Math.max(0, Math.min(3, Math.floor(P))), f = P - i, a = CAM[i], b = CAM[i + 1], d = lerp(a[0], b[0], f), hgt = lerp(a[1], b[1], f), tx = lerp(a[2], b[2], f), ty = lerp(a[3], b[3], f);
   const ang = (reduce ? .6 : .6 + Math.sin(t * .13) * .35) + mEase[0] * .35 + (P > 3.5 ? -.25 : 0);
   camera.position.set(tx + Math.sin(ang) * d, hgt + ty - mEase[1] * .6, Math.cos(ang) * d); camera.lookAt(tx, ty, 0);
   const s = sel >= 0 && P > 3.6 ? 1 : 0; mat.uniforms.uSel.value += (s - mat.uniforms.uSel.value) * .1; if (sel >= 0) mat.uniforms.uSelPos.value.set(...SITE_POS[sel]);
-  renderer.render(scene, camera); tags();
+  composer.render(); tags();
 }
+
+// ---------- sound: everything is synthesised, nothing is downloaded ----------
+const snd = { ctx: null, on: true, master: null, wet: null, drone: [], root: 55 };
+const NOTES = [55, 65.41, 73.42, 82.41, 110]; // one root note per chapter
+try { if (localStorage.getItem('z1-sound') === 'off') snd.on = false; } catch (e) {}
+function sndInit() { if (snd.ctx) return; const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return; const c = snd.ctx = new AC();
+  const comp = c.createDynamicsCompressor(); comp.threshold.value = -18; comp.ratio.value = 4; comp.connect(c.destination);
+  snd.master = c.createGain(); snd.master.gain.value = 0; snd.master.connect(comp);
+  // a small echo space
+  const d1 = c.createDelay(1), d2 = c.createDelay(1), fb = c.createGain(), lp = c.createBiquadFilter(); d1.delayTime.value = .23; d2.delayTime.value = .37; fb.gain.value = .38; lp.type = 'lowpass'; lp.frequency.value = 2600;
+  snd.wet = c.createGain(); snd.wet.gain.value = .5; snd.wet.connect(d1); d1.connect(d2); d2.connect(lp); lp.connect(fb); fb.connect(d1); d1.connect(snd.master); d2.connect(snd.master);
+  // the drone: two detuned voices and a fifth, through a slowly breathing filter
+  const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 260; f.Q.value = 3; const g = c.createGain(); g.gain.value = .22; f.connect(g); g.connect(snd.master); g.connect(snd.wet);
+  [[1, 'sawtooth', -6], [1, 'sawtooth', 7], [1.5, 'triangle', 0], [2, 'sine', 3]].forEach(([m, type, det]) => { const o = c.createOscillator(); o.type = type; o.frequency.value = snd.root * m; o.detune.value = det; const og = c.createGain(); og.gain.value = m === 1 ? .5 : .22; o.connect(og); og.connect(f); o.start(); snd.drone.push([o, m]); });
+  const lfo = c.createOscillator(), lg = c.createGain(); lfo.frequency.value = .07; lg.gain.value = 110; lfo.connect(lg); lg.connect(f.frequency); lfo.start();
+  snd.master.gain.setTargetAtTime(snd.on ? .55 : 0, c.currentTime, .8); }
+function noise(dur) { const c = snd.ctx, b = c.createBuffer(1, Math.floor(c.sampleRate * dur), c.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; const s = c.createBufferSource(); s.buffer = b; return s; }
+function ping(freq, at, vol, dur) { const c = snd.ctx, o = c.createOscillator(), g = c.createGain(); o.type = 'sine'; o.frequency.value = freq; g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(vol, at + .008); g.gain.exponentialRampToValueAtTime(.0001, at + dur); o.connect(g); g.connect(snd.master); g.connect(snd.wet); o.start(at); o.stop(at + dur + .05); }
+function sfxMorph(i) { if (!snd.ctx) return; const c = snd.ctx, t = c.currentTime, root = NOTES[i];
+  snd.drone.forEach(([o, m]) => o.frequency.setTargetAtTime(root * m, t, .5));
+  // the swarm: a band of noise that sweeps up and settles
+  const n = noise(2.4), bp = c.createBiquadFilter(), g = c.createGain(); bp.type = 'bandpass'; bp.Q.value = 1.4; bp.frequency.setValueAtTime(260, t); bp.frequency.exponentialRampToValueAtTime(3400, t + .9); bp.frequency.exponentialRampToValueAtTime(520, t + 2.2);
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.22, t + .5); g.gain.exponentialRampToValueAtTime(.0001, t + 2.3); n.connect(bp); bp.connect(g); g.connect(snd.master); g.connect(snd.wet); n.start(t); n.stop(t + 2.4);
+  // sparks while the particles are in flight
+  const sc = [1, 1.125, 1.25, 1.5, 1.6875, 2, 2.25, 2.5, 3]; for (let k = 0; k < 14; k++) ping(root * 8 * sc[Math.floor(Math.random() * sc.length)], t + .15 + Math.random() * 1.5, .028, .5);
+  // the form lands: a soft bell
+  const a = t + 1.55; ping(root * 4, a, .16, 2.4); ping(root * 6, a, .07, 1.8); ping(root * 11.04, a, .03, 1.1); }
+function sfxTick() { if (snd.ctx && snd.on) ping(1400, snd.ctx.currentTime, .05, .09); }
+function sfxSelect() { if (!snd.ctx) return; const t = snd.ctx.currentTime; [440, 554.37, 659.25, 880].forEach((f, k) => ping(f, t + k * .07, .09, 1.6)); }
+function soundSet(on) { snd.on = on; try { localStorage.setItem('z1-sound', on ? 'on' : 'off'); } catch (e) {} if (snd.ctx) { if (on && snd.ctx.state === 'suspended') snd.ctx.resume(); snd.master.gain.setTargetAtTime(on ? .55 : 0, snd.ctx.currentTime, .25); } const b = $('btnSound'); b.setAttribute('aria-pressed', on ? 'true' : 'false'); b.textContent = on ? 'Sound on' : 'Sound off'; }
+$('btnSound').addEventListener('click', () => { sndInit(); soundSet(!snd.on); });
 // ---------- chapters ----------
 const copy = $('copy'), rail = $('rail'), sites = $('sites'), hint = $('hint'), btnSites = $('btnSites');
 CH.forEach((c, i) => { const b = document.createElement('button'); b.type = 'button'; const s = document.createElement('span'); s.textContent = c.k; const l = document.createElement('i'); b.append(s, l); b.addEventListener('click', () => go(i)); rail.append(b); });
 function paint() { const c = CH[cur]; copy.querySelector('.n').textContent = cur < 4 ? '0' + (cur + 1) + ' / 04' : ''; copy.querySelector('h2').textContent = c.h; copy.querySelector('p').textContent = c.p; copy.classList.remove('swap');
   [...rail.children].forEach((b, i) => b.setAttribute('aria-current', i === cur ? 'true' : 'false')); const m = cur === 4; sites.classList.toggle('off', !m); btnSites.setAttribute('aria-pressed', m ? 'true' : 'false'); btnSites.textContent = m ? 'Back to the story' : 'Sites'; copy.hidden = m; if (cur > 0) hint.style.opacity = 0; }
 let lock = 0;
-function go(i) { i = Math.max(0, Math.min(4, i)); if (i === cur) return; fromP = P; target = i; tSwap = performance.now(); cur = i; lock = performance.now() + (reduce ? 200 : 900); copy.classList.add('swap'); setTimeout(paint, reduce ? 0 : 420); if (i !== 4) select(-1); }
+function go(i) { i = Math.max(0, Math.min(4, i)); if (i === cur) return; fromP = P; target = i; tSwap = performance.now(); cur = i; lock = performance.now() + (reduce ? 200 : 900); copy.classList.add('swap'); setTimeout(paint, reduce ? 0 : 420); if (i !== 4) select(-1); sfxMorph(i); }
 let acc = 0;
 addEventListener('wheel', (e) => { if (entered === false) return; if (sites.contains(e.target) && sites.scrollHeight > sites.clientHeight + 2) return; if (performance.now() < lock) return; acc += e.deltaY; if (Math.abs(acc) > 60) { go(cur + (acc > 0 ? 1 : -1)); acc = 0; } }, { passive: true });
 let ty0 = null; addEventListener('touchstart', (e) => { ty0 = e.touches[0].clientY; }, { passive: true });
@@ -214,26 +250,26 @@ btnSites.addEventListener('click', () => go(cur === 4 ? 3 : 4));
 // ---------- sites menu ----------
 const list = $('siteList'), card = $('siteCard'), tagBox = $('tags'); const tagEls = [];
 SITES.forEach((s, i) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'site'; const a = document.createElement('div'); a.className = 'id'; a.textContent = s.id; const n = document.createElement('div'); n.className = 'nm'; n.textContent = s.name; const t = document.createElement('div'); t.className = 'ty'; t.textContent = s.types; b.append(a, n, t);
-  b.addEventListener('click', () => select(i)); b.addEventListener('pointerenter', () => { if (sel < 0) hover(i); }); b.addEventListener('pointerleave', () => { if (sel < 0) hover(-1); }); list.append(b);
+  b.addEventListener('click', () => select(i)); b.addEventListener('pointerenter', () => { sfxTick(); if (sel < 0) hover(i); }); b.addEventListener('pointerleave', () => { if (sel < 0) hover(-1); }); list.append(b);
   const g = document.createElement('div'); g.className = 'tag'; const bb = document.createElement('b'); bb.textContent = s.id; g.append(bb, s.name); tagBox.append(g); tagEls.push(g); });
 let hov = -1; function hover(i) { hov = i; if (ok) { const on = i >= 0; if (on) mat.uniforms.uSelPos.value.set(...SITE_POS[i]); mat.uniforms.uSel.value = Math.max(mat.uniforms.uSel.value, on ? .6 : 0); } }
-function select(i) { sel = i; [...list.children].forEach((b, j) => b.classList.toggle('on', j === i)); card.textContent = ''; if (i < 0) return; const s = SITES[i]; const c = document.createElement('div'); c.className = 'card'; const h = document.createElement('div'); h.style.fontWeight = '700'; h.textContent = s.id + '  ' + s.name; const a = document.createElement('a'); a.href = s.href; a.textContent = 'Open the plan room'; const n = document.createElement('div'); n.className = 'note'; n.textContent = s.note; c.append(h, a, n); card.append(c); }
+function select(i) { if (i >= 0 && i !== sel) sfxSelect(); sel = i; [...list.children].forEach((b, j) => b.classList.toggle('on', j === i)); card.textContent = ''; if (i < 0) return; const s = SITES[i]; const c = document.createElement('div'); c.className = 'card'; const h = document.createElement('div'); h.style.fontWeight = '700'; h.textContent = s.id + '  ' + s.name; const a = document.createElement('a'); a.href = s.href; a.textContent = 'Open the plan room'; const n = document.createElement('div'); n.className = 'note'; n.textContent = s.note; c.append(h, a, n); card.append(c); }
 const v3 = ok ? new THREE.Vector3() : null;
 function tags() { const show = P > 3.7; tagEls.forEach((g, i) => { if (!show) { g.style.opacity = 0; return; } v3.set(SITE_POS[i][0], SITE_POS[i][1] + 3.0, SITE_POS[i][2]).project(camera); g.style.opacity = 1; g.style.left = ((v3.x * .5 + .5) * innerWidth) + 'px'; g.style.top = ((-v3.y * .5 + .5) * innerHeight) + 'px'; }); }
 // ---------- enter and full screen ----------
 let entered = false; const enter = $('enter'), btnFull = $('btnFull'), root = document.documentElement;
 const canFull = !!(root.requestFullscreen || root.webkitRequestFullscreen);
 function full(on) { try { if (on) { const r = (root.requestFullscreen || root.webkitRequestFullscreen).call(root); if (r && r.catch) r.catch(() => {}); } else if (document.fullscreenElement || document.webkitFullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (e) {} }
-function start(fs) { if (fs && canFull) full(true); entered = true; enter.classList.add('out'); setTimeout(() => { enter.hidden = true; }, 750); btnFull.hidden = !canFull; paint(); $('btnSites').focus({ preventScroll: true }); }
+function start(fs) { if (fs && canFull) full(true); sndInit(); soundSet(snd.on); $('btnSound').hidden = !snd.ctx; if (snd.ctx) sfxMorph(0); entered = true; enter.classList.add('out'); setTimeout(() => { enter.hidden = true; }, 750); btnFull.hidden = !canFull; paint(); $('btnSites').focus({ preventScroll: true }); }
 $('go').addEventListener('click', () => start(true)); $('goWin').addEventListener('click', () => start(false));
 if (!canFull) { $('go').querySelector('small').remove(); $('goWin').hidden = true; }
 btnFull.addEventListener('click', () => full(!(document.fullscreenElement || document.webkitFullscreenElement)));
 const fsSync = () => { btnFull.textContent = (document.fullscreenElement || document.webkitFullscreenElement) ? 'Exit full screen' : 'Full screen'; }; document.addEventListener('fullscreenchange', fsSync); document.addEventListener('webkitfullscreenchange', fsSync);
-document.addEventListener('visibilitychange', () => { const r = !document.hidden; if (r && !running) { running = true; requestAnimationFrame(frame); } else if (!r) running = false; });
+document.addEventListener('visibilitychange', () => { const r = !document.hidden; if (snd.ctx) { if (r && snd.on) snd.ctx.resume(); else snd.ctx.suspend(); } if (r && !running) { running = true; requestAnimationFrame(frame); } else if (!r) running = false; });
 copy.hidden = true; rail.hidden = false; requestAnimationFrame(frame);
 if (!ok) { // no WebGL: the still image, and the sites list stays reachable
   CH.forEach((c) => c); }
-window.__z1 = { go, select, state: () => ({ cur, P, ok, N, entered }) };
+window.__z1 = { go, select, state: () => ({ cur, P, ok, N, entered, audio: snd.ctx ? snd.ctx.state : 'none', sound: snd.on }) };
 </script>
 </body>
 </html>
