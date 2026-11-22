@@ -45,7 +45,7 @@ a{color:var(--green)}
 .pad{padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px))}
 header{position:fixed;left:0;right:0;top:0;display:flex;align-items:center;gap:14px;padding-top:calc(18px + env(safe-area-inset-top,0px));z-index:25}
 header .mark{font-weight:800;font-size:20px;margin-right:auto;display:flex;align-items:flex-end;gap:10px}
-header .mark img{height:34px;width:auto;display:block}
+header .mark img{height:40px;width:auto;display:block}
 header .mark span{color:var(--mut);font-weight:600;font-size:15px;padding-bottom:1px}
 .ghost{background:rgba(4,6,10,.5);border:1.5px solid var(--line);border-radius:3px;padding:9px 15px;font-weight:650;font-size:15px}
 .ghost[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -101,7 +101,7 @@ header .mark span{color:var(--mut);font-weight:600;font-size:15px;padding-bottom
 .more{color:var(--mut);font-size:15px;margin-top:22px;max-width:40ch}
 .tag{position:fixed;z-index:4;transform:translate(-50%,-100%);pointer-events:none;font-weight:700;font-size:15px;background:rgba(4,6,10,.6);padding:4px 10px;border:1px solid var(--line);white-space:nowrap;transition:opacity .4s}
 .tag b{color:var(--amber);font-family:var(--display);font-stretch:125%;margin-right:8px}
-@media (max-width:700px){ header{gap:6px} header .mark img{height:24px} header .mark span{display:none} #btnFull{display:none} .ghost{padding:7px 8px;font-size:12px;white-space:nowrap} #sites{padding-top:calc(84px + env(safe-area-inset-top,0px))} .tag{display:none} #rail button span{display:none} #copy{padding-bottom:calc(11vh + env(safe-area-inset-bottom,0px))} .site .nm{font-size:36px} #sites{background:rgba(4,6,10,.82)} }
+@media (max-width:700px){ header{gap:6px} header .mark img{height:28px} header .mark span{display:none} #btnFull{display:none} .ghost{padding:7px 8px;font-size:12px;white-space:nowrap} #sites{padding-top:calc(84px + env(safe-area-inset-top,0px))} .tag{display:none} #rail button span{display:none} #copy{padding-bottom:calc(11vh + env(safe-area-inset-bottom,0px))} .site .nm{font-size:36px} #sites{background:rgba(4,6,10,.82)} }
 body.cap #about,body.cap header .ghost,body.cap #rail,body.cap #hint,body.cap #enter,body.cap #sites{display:none!important} body.cap #copy{transition:none}
 @media (prefers-reduced-motion:reduce){ #enter,#copy,#sites,.tag{transition:none} }
 </style>
@@ -111,7 +111,7 @@ body.cap #about,body.cap header .ghost,body.cap #rail,body.cap #hint,body.cap #e
 <img id="still" src="home/poster.jpg" alt="A battery storage cabinet drawn in glowing particles, pulled apart into its layers." hidden>
 
 <header class="pad">
-  <span class="mark"><img src="home/logo-light.png" alt="SmartTec by Z1Power" width="720" height="169"><span>Labs</span></span>
+  <span class="mark"><img src="home/z1power-logo.png" alt="Z1Power" width="900" height="244"><span>Labs</span></span>
   <button class="ghost" id="btnAbout" type="button" aria-pressed="false">What we do</button>
   <button class="ghost" id="btnSites" type="button" aria-pressed="false">Sites</button>
   <button class="ghost" id="btnSound" type="button" aria-pressed="true" hidden>Sound on</button>

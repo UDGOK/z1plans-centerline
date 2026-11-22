@@ -51,7 +51,7 @@ h1,h2,h3,p{margin:0}
 #gate{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:calc(9vh + env(safe-area-inset-bottom,0px));background:linear-gradient(to right,rgba(6,9,11,.9),rgba(6,9,11,.45) 48%,rgba(6,9,11,0) 75%);transition:opacity .5s}
 #gate.out{opacity:0;pointer-events:none}
 #gate.wrap,.gtop.wrap,#opening.wrap{max-width:none;padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px))}
-@media (max-width:700px){.gtop b img{height:24px}.gtop b{font-size:16px}.gtop b span{display:none}.gh{font-size:13px;padding:7px 10px;white-space:nowrap}}
+@media (max-width:700px){.gtop b img{height:28px}.gtop b{font-size:16px}.gtop b span{display:none}.gh{font-size:13px;padding:7px 10px;white-space:nowrap}}
 #gate form{width:min(640px,100%)}
 #gate .kick{font-family:var(--display);font-stretch:125%;font-weight:800;color:var(--accent);font-size:17px}
 #gate h1{font-size:clamp(64px,13vw,150px);margin-top:6px}
@@ -60,7 +60,7 @@ h1,h2,h3,p{margin:0}
 #gate input{flex:1;min-width:0;border:2px solid var(--ink);background:rgba(6,9,11,.65);color:var(--ink);padding:15px 16px;border-radius:3px;font-size:20px}
 #gate .btn{font-size:18px;padding:15px 22px;background:var(--ink);color:var(--bg)}
 .gtop{position:fixed;left:0;right:0;top:0;z-index:3;display:flex;align-items:center;gap:12px;padding-top:calc(18px + env(safe-area-inset-top,0px))}
-.gtop b{font-size:20px;font-weight:800;margin-right:auto;display:flex;align-items:flex-end;gap:10px}.gtop b img{height:32px;width:auto;display:block}.gtop b span{font-weight:500;color:var(--mut);font-size:15px}
+.gtop b{font-size:20px;font-weight:800;margin-right:auto;display:flex;align-items:flex-end;gap:10px}.gtop b img{height:38px;width:auto;display:block}.gtop b span{font-weight:500;color:var(--mut);font-size:15px}
 .gh{background:rgba(6,9,11,.5);color:var(--ink);border:1.5px solid var(--line);border-radius:3px;padding:8px 13px;font-weight:650;font-size:14px;text-decoration:none}
 #opening{position:fixed;left:0;right:0;bottom:0;z-index:4;padding-bottom:calc(8vh + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,rgba(6,9,11,.85),rgba(6,9,11,0));padding-top:120px;transition:opacity .5s}
 #opening .kick{font-family:var(--display);font-stretch:125%;font-weight:800;color:var(--accent);font-size:17px}
@@ -210,7 +210,7 @@ h2.sec{font-size:clamp(30px,5vw,48px);margin-top:10px}
 <body>
 
 <canvas id="fx" aria-hidden="true"></canvas>
-<div class="gtop wrap" id="gtop"><b><img src="../home/logo-light.png" alt="SmartTec by Z1Power" width="720" height="169"> <span>/ Z1P-CL-01</span></b><a class="gh" href="../">&#8592; Home</a><button class="gh" type="button" id="snd" aria-pressed="false">Sound off</button></div>
+<div class="gtop wrap" id="gtop"><b><img src="../home/z1power-logo.png" alt="Z1Power" width="900" height="244"> <span>/ Z1P-CL-01</span></b><a class="gh" href="../">&#8592; Home</a><button class="gh" type="button" id="snd" aria-pressed="false">Sound off</button></div>
 <div id="gate" class="wrap">
   <form id="gateform" autocomplete="off">
     <div class="kick">Z1P-CL-01</div>
