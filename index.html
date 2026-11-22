@@ -5,124 +5,235 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#04060a">
 <title>Z1 Power Labs</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap">
 <style>
-/* Layout: one full-screen stage (film, then the live board), then a plain index of lab types laid out like a drawing index. */
-:root{--bg:#EDF0EA;--panel:#fff;--ink:#17231D;--mut:#56655D;--line:#C3CBC4;--accent:#1D5C40;--on-accent:#fff;--stage:#0d0e10;--gold:#D9B25B;
-  --display:"Archivo","Arial Narrow",Arial,sans-serif;--body:"Archivo",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color-scheme:light}
-@media (prefers-color-scheme:dark){:root{--bg:#111916;--panel:#19231E;--ink:#E9EEE8;--mut:#9DABA2;--line:#34443C;--accent:#6FCF9F;--on-accent:#0E1713;color-scheme:dark}}
+/* Layout: one fixed full-screen stage of particles. Text sits bottom-left, progress on the right edge, the sites menu takes the left third. Single dark look by design. */
+:root{--bg:#04060a;--ink:#F2EEE1;--mut:rgba(242,238,225,.66);--line:rgba(242,238,225,.22);--amber:#FFB84A;--green:#19C37D;--panel:rgba(8,12,14,.72);
+  --display:"Archivo","Arial Narrow",Arial,sans-serif;--body:"Archivo",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color-scheme:dark}
 *{box-sizing:border-box}
-html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;overflow:hidden;overscroll-behavior:none}
 [hidden]{display:none!important}
-a{color:var(--accent)}
-button{font:inherit;cursor:pointer}
-:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
-.cond{font-family:var(--display);font-stretch:62%;font-weight:800;line-height:.92;text-wrap:balance}
-.wide{font-family:var(--display);font-stretch:125%;font-weight:900;letter-spacing:-.03em;line-height:1}
-.stage{position:relative;height:100vh;height:100svh;background:var(--stage);overflow:hidden}
-.frame{position:absolute;left:50%;top:50%;width:max(100vw,177.78svh);aspect-ratio:16/9;transform:translate(-50%,-50%)}
-.frame video,.frame canvas,.frame img{position:absolute;inset:0;width:100%;height:100%;display:block}
-.frame canvas{opacity:0;transition:opacity .25s}
-.frame canvas.on{opacity:1}
-.frame canvas.hot{cursor:pointer}
-.hud{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding:0 max(18px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));pointer-events:none}
-.hud button,.hud a{pointer-events:auto;background:rgba(13,14,16,.6);color:#F2EEE1;border:1.5px solid rgba(242,238,225,.7);border-radius:3px;padding:10px 16px;font-weight:650;text-decoration:none;font-size:15px}
-.hint{color:#F2EEE1;font-size:15px;background:rgba(13,14,16,.6);padding:8px 12px;border-radius:3px}
-.tip{position:absolute;z-index:3;width:min(300px,80vw);background:var(--panel);color:var(--ink);border:2px solid var(--ink);padding:12px 14px;box-shadow:6px 6px 0 rgba(0,0,0,.35);pointer-events:none}
-.tip b{display:block;font-size:18px}.tip span{display:block;font-size:15px;color:var(--mut);margin-top:2px}
-main{max-width:1180px;margin:0 auto;padding:56px max(16px,env(safe-area-inset-right,0px)) 80px max(16px,env(safe-area-inset-left,0px))}
-h1{font-size:clamp(48px,9vw,112px);margin:0}
-.lede{font-size:20px;max-width:60ch;margin:18px 0 44px}
-.idx{border-top:3px solid var(--ink)}
-.row{display:grid;grid-template-columns:230px minmax(0,1fr) minmax(0,1.1fr);gap:8px 28px;padding:22px 14px;border-bottom:1px solid var(--line);align-items:start;scroll-margin-top:20px}
-.row.sel{background:var(--panel);outline:2px solid var(--ink)}
-.row .no{font-size:26px}
-.row h2{font-size:22px;margin:0 0 4px;font-weight:650}
-.row p{margin:0;color:var(--mut)}
-.lab{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;padding:4px 0}
-.lab .id{font-family:var(--display);font-stretch:125%;font-weight:800}
-.lab a{font-weight:650}
-.none{color:var(--mut)}
-footer{margin-top:40px;color:var(--mut);font-size:15px;max-width:66ch}
-@media (max-aspect-ratio:6/5){ .stage{height:auto} .frame{position:relative;left:0;top:0;transform:none;width:100vw} .hud{position:static;padding:10px 16px;justify-content:flex-end} .hint{display:none} }
-@media (max-width:760px){ .row{grid-template-columns:minmax(0,1fr)} }
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:var(--green)}
+:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
+.cond{font-family:var(--display);font-stretch:62%;font-weight:800;line-height:.9;text-wrap:balance}
+#gl,#still{position:fixed;inset:0;width:100%;height:100%;display:block}
+#still{object-fit:cover}
+.pad{padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px))}
+header{position:fixed;left:0;right:0;top:0;display:flex;align-items:center;gap:14px;padding-top:calc(18px + env(safe-area-inset-top,0px));z-index:25}
+header .mark{font-weight:800;font-size:22px;margin-right:auto}
+.ghost{background:rgba(4,6,10,.5);border:1.5px solid var(--line);border-radius:3px;padding:9px 15px;font-weight:650;font-size:15px}
+.ghost[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+/* enter screen */
+#enter{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:calc(8vh + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,rgba(4,6,10,.92) 0%,rgba(4,6,10,.25) 55%,rgba(4,6,10,.1) 100%);transition:opacity .7s}
+#enter.out{opacity:0;pointer-events:none}
+#enter h1{font-size:clamp(64px,13vw,190px);margin:0}
+#enter p{font-size:clamp(18px,2vw,24px);max-width:34ch;margin:18px 0 30px;color:var(--mut)}
+.go{background:var(--ink);color:var(--bg);border:0;border-radius:3px;padding:17px 30px;font-weight:750;font-size:20px;align-self:flex-start}
+.go small{display:block;font-weight:500;font-size:13px;opacity:.7}
+.alt{background:none;border:0;padding:14px 0 0;color:var(--mut);text-decoration:underline;font-size:15px;align-self:flex-start}
+/* chapter text */
+#copy{position:fixed;left:0;bottom:0;z-index:4;padding-bottom:calc(7vh + env(safe-area-inset-bottom,0px));max-width:min(900px,92vw);pointer-events:none;transition:opacity .45s, transform .45s}
+#copy.swap{opacity:0;transform:translateY(14px)}
+#copy .n{font-family:var(--display);font-stretch:125%;font-weight:800;color:var(--amber);font-size:17px}
+#copy h2{font-size:clamp(46px,8.4vw,128px);margin:6px 0 0}
+#copy p{font-size:clamp(17px,1.7vw,23px);max-width:44ch;margin:14px 0 0;color:var(--mut)}
+#hint{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:4;font-size:14px;color:var(--mut);pointer-events:none;transition:opacity .4s}
+/* progress rail */
+#rail{position:fixed;right:max(18px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);z-index:5;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+#rail button{background:none;border:0;padding:6px 0 6px 12px;display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mut)}
+#rail button span{opacity:0;transition:opacity .2s}
+#rail button:hover span,#rail button:focus-visible span,#rail button[aria-current="true"] span{opacity:1}
+#rail button i{display:block;width:22px;height:3px;background:var(--line);transition:width .3s,background .3s}
+#rail button[aria-current="true"]{color:var(--ink)}
+#rail button[aria-current="true"] i{width:44px;background:var(--amber)}
+/* sites menu */
+#sites{position:fixed;left:0;top:0;bottom:0;z-index:6;width:min(560px,100vw);padding-top:calc(96px + env(safe-area-inset-top,0px));padding-bottom:calc(30px + env(safe-area-inset-bottom,0px));background:linear-gradient(to right,rgba(4,6,10,.9) 0%,rgba(4,6,10,.7) 70%,rgba(4,6,10,0) 100%);overflow:auto;transition:opacity .5s, transform .5s}
+#sites.off{opacity:0;transform:translateX(-24px);pointer-events:none}
+#sites h2{font-size:clamp(54px,7vw,104px);margin:0 0 6px}
+#sites .lede{color:var(--mut);max-width:34ch;margin:0 0 26px}
+.site{display:block;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:18px 0;max-width:440px}
+.site:last-of-type{border-bottom:1px solid var(--line)}
+.site .id{font-family:var(--display);font-stretch:125%;font-weight:800;color:var(--amber);font-size:16px}
+.site .nm{font-family:var(--display);font-stretch:62%;font-weight:800;font-size:44px;line-height:1;margin-top:4px}
+.site .ty{color:var(--mut);font-size:15px;margin-top:6px}
+.site.on .nm,.site:hover .nm{color:var(--amber)}
+.card{max-width:440px;border:1.5px solid var(--ink);background:var(--panel);padding:18px 20px;margin-top:20px}
+.card a{display:inline-block;background:var(--ink);color:var(--bg);text-decoration:none;font-weight:750;padding:12px 18px;border-radius:3px;margin-top:12px}
+.card .note{color:var(--mut);font-size:15px;margin-top:10px}
+.more{color:var(--mut);font-size:15px;margin-top:22px;max-width:40ch}
+.tag{position:fixed;z-index:4;transform:translate(-50%,-100%);pointer-events:none;font-weight:700;font-size:15px;background:rgba(4,6,10,.6);padding:4px 10px;border:1px solid var(--line);white-space:nowrap;transition:opacity .4s}
+.tag b{color:var(--amber);font-family:var(--display);font-stretch:125%;margin-right:8px}
+@media (max-width:700px){ header .mark{font-size:18px;white-space:nowrap} .ghost{padding:8px 10px;font-size:13px;white-space:nowrap} #sites{padding-top:calc(84px + env(safe-area-inset-top,0px))} .tag{display:none} #rail button span{display:none} #copy{padding-bottom:calc(11vh + env(safe-area-inset-bottom,0px))} .site .nm{font-size:36px} #sites{background:rgba(4,6,10,.82)} }
+@media (prefers-reduced-motion:reduce){ #enter,#copy,#sites,.tag{transition:none} }
 </style>
 </head>
 <body>
-<header class="stage" id="stage">
-  <div class="frame" id="frame">
-    <video id="film" muted playsinline preload="auto" poster="home/poster.jpg" aria-label="A battery storage cabinet opens layer by layer, then the camera drops onto its control board.">
-      <source src="home/film-1080.mp4" type="video/mp4" media="(min-width: 1100px)">
-      <source src="home/film-720.mp4" type="video/mp4">
-      <source src="home/film-720.webm" type="video/webm">
-    </video>
-    <canvas id="board" width="1920" height="1080" role="img" aria-label="A circuit board drawn as a map. Five gold pads are labelled Battery lab, Inverter lab, BMS lab, ESS lab and BESS lab."></canvas>
-  </div>
-  <div class="tip" id="tip" hidden><b></b><span></span></div>
-  <div class="hud">
-    <span class="hint" id="hint" hidden>Choose a lab on the board</span>
-    <span></span>
-    <button type="button" id="skip">Skip the film</button>
-    <button type="button" id="replay" hidden>Replay the film</button>
-  </div>
+<canvas id="gl" aria-hidden="true"></canvas>
+<img id="still" src="home/poster.jpg" alt="A battery storage cabinet drawn in glowing particles, pulled apart into its layers." hidden>
+
+<header class="pad">
+  <span class="mark">Z1 Power Labs</span>
+  <button class="ghost" id="btnSites" type="button" aria-pressed="false">Sites</button>
+  <button class="ghost" id="btnFull" type="button" hidden>Full screen</button>
 </header>
-<main>
-  <h1 class="cond">Z1 Power Labs</h1>
-  <p class="lede">Z1 Power runs research and development labs for batteries, battery management, inverters and energy storage systems. Each lab keeps its drawings in its own plan room.</p>
-  <div class="idx" id="idx"></div>
-  <footer>Plan rooms open with an access code from Z1 Power. The cabinet in the film is a generic illustration, not a Z1 Power product.</footer>
-</main>
+
+<section id="enter" class="pad" aria-labelledby="eh">
+  <h1 class="cond" id="eh">Z1 Power Labs</h1>
+  <p>Research and development for batteries, inverters and energy storage. See how a single cell becomes a system, then visit our sites.</p>
+  <button class="go" id="go" type="button">Enter<small>Opens in full screen</small></button>
+  <button class="alt" id="goWin" type="button">Enter without full screen</button>
+</section>
+
+<div id="copy" class="pad" aria-live="polite"><div class="n"></div><h2 class="cond"></h2><p></p></div>
+<div id="hint">Scroll, swipe or use the arrow keys</div>
+<nav id="rail" aria-label="Chapters"></nav>
+
+<section id="sites" class="pad off" aria-labelledby="sh">
+  <h2 class="cond" id="sh">Our sites</h2>
+  <p class="lede">Each site keeps its drawings in its own plan room.</p>
+  <div id="siteList"></div>
+  <div id="siteCard"></div>
+  <p class="more">New sites appear here as they are added. Plan rooms open with an access code from Z1 Power.</p>
+</section>
+<div id="tags"></div>
+
 <script type="module">
-import { drawBoard, LABS, SETTLED } from './home/board.js';
-const TYPES = [
-  { k: 'bat', no: 'LAB-BAT', name: 'Battery lab', what: 'Cells, modules and packs on test.', labs: ['Z1P-CL-01'] },
-  { k: 'bms', no: 'LAB-BMS', name: 'BMS lab', what: 'Battery-management boards and firmware.', labs: ['Z1P-CL-01'] },
-  { k: 'inv', no: 'LAB-INV', name: 'Inverter lab', what: 'Power conversion hardware.', labs: [] },
-  { k: 'ess', no: 'LAB-ESS', name: 'ESS lab', what: 'Energy storage systems as complete units.', labs: [] },
-  { k: 'bess', no: 'LAB-BESS', name: 'BESS lab', what: 'Battery energy storage at container scale.', labs: [] },
+import * as THREE from './home/three.module.min.js';
+
+// ---------- content ----------
+const CH = [
+  { k: 'Cell', h: 'It starts with a cell', p: 'Our battery labs test cells before anything is built from them.' },
+  { k: 'Pack', h: 'Cells become a pack', p: 'Modules and packs, with the management electronics that watch every cell.' },
+  { k: 'Inverter', h: 'Power is converted', p: 'Inverter labs work on turning stored energy into usable power.' },
+  { k: 'System', h: 'It becomes a system', p: 'Storage systems are assembled and tested as complete units.' },
+  { k: 'Sites', h: '', p: '' },
 ];
-const ROOMS = { 'Z1P-CL-01': { href: 'centerline/', note: 'Plan room, access code required' } };
+const SITES = [
+  { id: 'Z1P-CL-01', name: 'Battery and BMS lab', types: 'Battery lab, BMS lab', href: 'centerline/', note: 'Plan room. Access code required.' },
+];
 const $ = (id) => document.getElementById(id);
-// ---------- index ----------
-const idx = $('idx');
-for (const t of TYPES) {
-  const row = document.createElement('section'); row.className = 'row'; row.id = 'lab-' + t.k;
-  const no = document.createElement('div'); no.className = 'wide no'; no.textContent = t.no;
-  const mid = document.createElement('div'); const h = document.createElement('h2'); h.textContent = t.name; const p = document.createElement('p'); p.textContent = t.what; mid.append(h, p);
-  const labs = document.createElement('div');
-  if (!t.labs.length) { const n = document.createElement('div'); n.className = 'none'; n.textContent = 'No lab listed yet.'; labs.append(n); }
-  for (const id of t.labs) { const d = document.createElement('div'); d.className = 'lab'; const i = document.createElement('span'); i.className = 'id'; i.textContent = id; const a = document.createElement('a'); a.href = ROOMS[id].href; a.textContent = 'Open the plan room'; const n = document.createElement('span'); n.className = 'none'; n.textContent = ROOMS[id].note; d.append(i, a, n); labs.append(d); }
-  row.append(no, mid, labs); idx.append(row);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const small = Math.min(innerWidth, innerHeight) < 700;
+
+// ---------- particle shapes ----------
+const N = small ? 26000 : 64000;
+function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const R = rng(11);
+// a shape is a list of parts {w: weight, f: () => [x, y, z], c: colour code 0 amber, 1 green, 2 dim green}
+const onBox = (cx, cy, cz, w, h, d) => () => { const A = [h * d, h * d, w * d, w * d, w * h, w * h], T = A[0] * 2 + A[2] * 2 + A[4] * 2; let r = R() * T, f = 0; while (r > A[f]) { r -= A[f]; f++; } const u = R() - .5, v = R() - .5; const p = f < 2 ? [(f ? .5 : -.5), u, v] : f < 4 ? [u, (f === 2 ? .5 : -.5), v] : [u, v, (f === 4 ? .5 : -.5)]; return [cx + p[0] * w, cy + p[1] * h, cz + p[2] * d]; };
+const onCyl = (cx, cy, cz, r, h) => () => { const a = R() * 6.2832; if (R() < r / (r + h)) { const q = Math.sqrt(R()) * r; return [cx + Math.cos(a) * q, cy + (R() < .5 ? h / 2 : -h / 2), cz + Math.sin(a) * q]; } return [cx + Math.cos(a) * r, cy + (R() - .5) * h, cz + Math.sin(a) * r]; };
+const onRingY = (cx, cy, cz, r, t) => () => { const a = R() * 6.2832, q = r + (R() - .5) * t; return [cx + Math.cos(a) * q, cy + (R() - .5) * t, cz + Math.sin(a) * q]; };
+const onRingZ = (cx, cy, cz, r, t) => () => { const a = R() * 6.2832, q = r + (R() - .5) * t; return [cx + Math.cos(a) * q, cy + Math.sin(a) * q, cz + (R() - .5) * t]; };
+const dust = (rad) => () => { const a = R() * 6.2832, b = Math.acos(2 * R() - 1), q = rad * (.55 + .45 * R()); return [Math.sin(b) * Math.cos(a) * q, Math.cos(b) * q * .6, Math.sin(b) * Math.sin(a) * q]; };
+const ground = (rad, step) => () => { const a = R() * 6.2832, q = Math.sqrt(R()) * rad; return [Math.round(Math.cos(a) * q / step) * step, -1.2, Math.round(Math.sin(a) * q / step) * step]; };
+const SITE_POS = SITES.map((s, i) => { const n = SITES.length, a = n === 1 ? 0 : (i / (n - 1) - .5) * 1.5; return [Math.sin(a) * 2.6 + .9, -1.2, -Math.cos(a) * 1.2 + 1.0]; });
+function shape(i) {
+  const P = [];
+  if (i === 0) { P.push({ w: 58, f: onCyl(0, 0, 0, .46, 1.9), c: 0 }, { w: 6, f: onCyl(0, 1.02, 0, .17, .14), c: 1 }); for (const y of [-.7, 0, .7]) P.push({ w: 6, f: onRingY(0, y, 0, .475, .03), c: 1 }); P.push({ w: 10, f: dust(4.5), c: 2 }); }
+  if (i === 1) { P.push({ w: 26, f: onBox(0, 0, 0, 2.9, .7, 1.6), c: 1 }); for (let k = 0; k < 12; k++) P.push({ w: 4.2, f: onBox(-1.265 + k * .23, 0, 0, .17, .56, 1.42), c: 0 }); P.push({ w: 3, f: onBox(-.9, .42, .55, .22, .14, .22), c: 1 }, { w: 3, f: onBox(.9, .42, .55, .22, .14, .22), c: 1 }, { w: 9, f: dust(4.8), c: 2 }); }
+  if (i === 2) { P.push({ w: 34, f: onBox(0, -.15, 0, 2.3, 1.0, 1.4), c: 1 }); for (let k = 0; k < 18; k++) P.push({ w: 1.5, f: onBox(-.98 + k * .115, .57, 0, .02, .42, 1.2), c: 0 }); for (const x of [-.55, .55]) { P.push({ w: 5, f: onRingZ(x, -.15, .72, .3, .035), c: 0 }, { w: 2, f: onRingZ(x, -.15, .72, .09, .05), c: 0 }); } for (let k = 0; k < 3; k++) P.push({ w: 1.5, f: onBox(-.3 + k * .3, -.75, .5, .14, .2, .14), c: 0 }); P.push({ w: 9, f: dust(4.8), c: 2 }); }
+  if (i === 3) { const s = 1.05, z0 = -1.75, y0 = -1.1; const b = (x, y, z, w, h, d) => onBox(x * s, y0 + y * s, (z0 + z) * s, w * s, h * s, d * s);
+    P.push({ w: 24, f: b(0, 1.07, 0, 1, 1.86, .8), c: 1 }, { w: 3, f: b(0, .07, 0, 1.04, .14, .84), c: 1 }); for (let k = 0; k < 6; k++) P.push({ w: 4.5, f: b(0, .27 + k * .184, .55 + k * .1, .86, .168, .66), c: 0 });
+    P.push({ w: 8, f: b(0, 1.63, 2.05, .86, .3, .64), c: 0 }, { w: 4, f: b(0, 1.36, 1.45, .86, .05, .6), c: 1 }, { w: 8, f: b(0, 1.07, 2.77, 1, 1.84, .035), c: 1 }, { w: 7, f: b(0, 1.42, 3.6, .62, .78, .2), c: 0 }, { w: 9, f: dust(5), c: 2 }); }
+  if (i === 4) { P.push({ w: 46, f: ground(7, .22), c: 2 }); SITE_POS.forEach(([x, y, z]) => { P.push({ w: 16 / SITES.length + 4, f: onCyl(x, y + 1.3, z, .035, 2.6), c: 0 }, { w: 5, f: onRingY(x, y + .02, z, .34, .03), c: 0 }, { w: 5, f: onRingY(x, y + .02, z, .7, .025), c: 1 }, { w: 4, f: onRingY(x, y + .02, z, 1.15, .02), c: 1 }, { w: 3, f: onCyl(x, y + 2.7, z, .12, .12), c: 0 }); }); P.push({ w: 16, f: dust(7), c: 2 }); }
+  const tot = P.reduce((a, p) => a + p.w, 0), pos = new Float32Array(N * 3), col = new Float32Array(N); let n = 0;
+  P.forEach((p, j) => { const cnt = j === P.length - 1 ? N - n : Math.min(N - n, Math.round(N * p.w / tot)); for (let q = 0; q < cnt; q++, n++) { const v = p.f(); pos[n * 3] = v[0]; pos[n * 3 + 1] = v[1]; pos[n * 3 + 2] = v[2]; col[n] = p.c; } });
+  // shuffle so that a particle's part differs from shape to shape (a richer morph)
+  const S = rng(100 + i); for (let a = N - 1; a > 0; a--) { const b = Math.floor(S() * (a + 1)); for (let k = 0; k < 3; k++) { const t = pos[a * 3 + k]; pos[a * 3 + k] = pos[b * 3 + k]; pos[b * 3 + k] = t; } const t = col[a]; col[a] = col[b]; col[b] = t; }
+  return { pos, col };
 }
-function choose(k) { document.querySelectorAll('.row.sel').forEach(r => r.classList.remove('sel')); const r = $('lab-' + k); r.classList.add('sel'); r.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' }); }
-// ---------- stage: film, then the live board ----------
-const film = $('film'), cv = $('board'), ctx = cv.getContext('2d'), skip = $('skip'), replay = $('replay'), hint = $('hint'), tip = $('tip');
-const SWAP = 24.0; let mode = 'film', t0 = 0, tStart = SWAP, hot = null, raf = 0, visible = true;
-const seen = () => { try { return sessionStorage.getItem('z1-film') === '1'; } catch (e) { return false; } };
-const mark = () => { try { sessionStorage.setItem('z1-film', '1'); } catch (e) {} };
-const now = () => performance.now() / 1000;
-const boardT = () => tStart + (now() - t0);
-function frame() { raf = 0; if (mode !== 'board' || !visible) return; const t = boardT(); drawBoard(ctx, t, 1920, 1080, t > SETTLED ? hot : null); if (t > SETTLED) hint.hidden = false; raf = requestAnimationFrame(frame); }
-function toBoard(from) { if (mode === 'board') return; mode = 'board'; tStart = from; t0 = now(); mark(); film.pause(); cv.classList.add('on'); skip.hidden = true; replay.hidden = false; if (!raf) raf = requestAnimationFrame(frame); }
-function watch() { if (mode !== 'film') return; if (film.currentTime >= SWAP || film.ended) { toBoard(SWAP); return; } requestAnimationFrame(watch); }
-function playFilm() { mode = 'film'; hot = null; tip.hidden = true; hint.hidden = true; cv.classList.remove('on', 'hot'); skip.hidden = false; replay.hidden = true; film.currentTime = 0; const p = film.play(); if (p && p.catch) p.catch(() => toBoard(SETTLED + 1)); requestAnimationFrame(watch); }
-film.addEventListener('error', () => toBoard(SETTLED + 1), true);
-skip.addEventListener('click', () => toBoard(SETTLED + 1));
-replay.addEventListener('click', playFilm);
-if (matchMedia('(prefers-reduced-motion: reduce)').matches || seen()) toBoard(SETTLED + 1); else playFilm();
-new IntersectionObserver((e) => { visible = e[0].isIntersecting; if (visible && mode === 'board' && !raf) raf = requestAnimationFrame(frame); if (!visible && mode === 'film') film.pause(); else if (visible && mode === 'film' && film.paused) film.play().catch(() => {}); }).observe($('stage'));
-document.addEventListener('visibilitychange', () => { visible = !document.hidden; if (visible && mode === 'board' && !raf) raf = requestAnimationFrame(frame); });
-// ---------- pointer: pads and their labels are the hit areas ----------
-function hit(ev) { if (mode !== 'board' || boardT() < SETTLED) return null; const r = cv.getBoundingClientRect(); const x = (ev.clientX - r.left) / r.width * 1920, y = (ev.clientY - r.top) / r.height * 1080;
-  for (const l of LABS) { if (Math.hypot(x - l.x, y - l.y) < 56) return l; const w = l.name.length * 29, x0 = l.a === 'c' ? l.lx - w / 2 : l.lx; if (x > x0 - 14 && x < x0 + w + 14 && y > l.ly - 14 && y < l.ly + 46) return l; } return null; }
-cv.addEventListener('pointermove', (ev) => { const l = hit(ev); hot = l ? l.k : null; cv.classList.toggle('hot', !!l);
-  if (l && ev.pointerType === 'mouse') { const t = TYPES.find(q => q.k === l.k); tip.querySelector('b').textContent = t.name; tip.querySelector('span').textContent = t.what + ' ' + (t.labs.length ? t.labs.length + (t.labs.length === 1 ? ' lab listed.' : ' labs listed.') : 'No lab listed yet.');
-    const s = $('stage').getBoundingClientRect(); tip.hidden = false; tip.style.left = Math.min(s.width - 320, Math.max(10, ev.clientX - s.left + 18)) + 'px'; tip.style.top = Math.min(s.height - 110, Math.max(10, ev.clientY - s.top + 18)) + 'px'; } else tip.hidden = true; });
-cv.addEventListener('pointerleave', () => { hot = null; tip.hidden = true; cv.classList.remove('hot'); });
-cv.addEventListener('click', (ev) => { const l = hit(ev); if (l) { hot = l.k; choose(l.k); } });
+
+// ---------- renderer ----------
+let renderer, ok = true;
+try { renderer = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: false, alpha: false, powerPreference: 'high-performance' }); } catch (e) { ok = false; }
+let scene, camera, mat, glow, P = 0, target = 0, cur = 0, t0 = performance.now(), mouse = [0, 0], mEase = [0, 0], running = true, sel = -1;
+const CAM = [[5.6, .5, 0, 0], [6.2, .9, 0, 0], [6.0, .9, 0, -.1], [8.8, 1.5, 0, -.1], [9.5, 3.6, .9, -.4]]; // distance, height, target x, target y
+if (ok) {
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); renderer.setClearColor(0x04060a, 1);
+  scene = new THREE.Scene(); camera = new THREE.PerspectiveCamera(34, 1, .1, 100);
+  const g = new THREE.BufferGeometry(); const shapes = [0, 1, 2, 3, 4].map(shape);
+  shapes.forEach((s, i) => g.setAttribute('p' + i, new THREE.BufferAttribute(s.pos, 3)));
+  g.setAttribute('position', new THREE.BufferAttribute(shapes[0].pos, 3));
+  const c4 = new Float32Array(N * 4), c5 = new Float32Array(N), sd = new Float32Array(N); const S = rng(3);
+  for (let i = 0; i < N; i++) { for (let k = 0; k < 4; k++) c4[i * 4 + k] = shapes[k].col[i]; c5[i] = shapes[4].col[i]; sd[i] = S(); }
+  g.setAttribute('ca', new THREE.BufferAttribute(c4, 4)); g.setAttribute('cb', new THREE.BufferAttribute(c5, 1)); g.setAttribute('seed', new THREE.BufferAttribute(sd, 1));
+  g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 20);
+  const vs = `attribute vec3 p0,p1,p2,p3,p4; attribute vec4 ca; attribute float cb, seed; uniform float uP,uT,uSize,uPix,uSel; uniform vec3 uSelPos; varying vec3 vC; varying float vA;
+    vec3 tint(float c){ return c<0.5? vec3(1.0,0.72,0.30) : vec3(0.10,0.80,0.52); }
+    void main(){ float i=floor(min(uP,3.999)); float f=uP-i;
+      vec3 A = i<0.5?p0 : i<1.5?p1 : i<2.5?p2 : p3; vec3 B = i<0.5?p1 : i<1.5?p2 : i<2.5?p3 : p4;
+      float a = i<0.5?ca.x : i<1.5?ca.y : i<2.5?ca.z : ca.w; float b = i<0.5?ca.y : i<1.5?ca.z : i<2.5?ca.w : cb;
+      float k = smoothstep(0.0,1.0, clamp((f - seed*0.4)/0.6, 0.0, 1.0)); float w = sin(k*3.14159);
+      vec3 p = mix(A,B,k);
+      p += w * vec3(sin(seed*40.0+uT*0.7), cos(seed*31.0+uT*0.6), sin(seed*17.0-uT*0.8)) * 0.7;
+      p += 0.012 * vec3(sin(uT*1.3+seed*90.0), cos(uT*1.1+seed*70.0), sin(uT*0.9+seed*50.0));
+      float dimA = a>1.5?0.5:1.0, dimB = b>1.5?0.5:1.0; vC = mix(tint(a)*dimA, tint(b)*dimB, k) * (0.75 + 0.5*fract(seed*7.3));
+      float near = 1.0 - smoothstep(0.0, 1.6, distance(p.xz, uSelPos.xz)); vC *= 1.0 + uSel*near*1.6;
+      vec4 mv = modelViewMatrix * vec4(p,1.0); gl_Position = projectionMatrix * mv;
+      gl_PointSize = uSize * uPix * (1.0 + 1.4*w) / -mv.z; vA = 1.0; }`;
+  const fs = `precision mediump float; varying vec3 vC; varying float vA; uniform float uAlpha; void main(){ float d = length(gl_PointCoord-0.5); float a = smoothstep(0.5,0.0,d); gl_FragColor = vec4(vC*a*uAlpha, a*uAlpha); }`;
+  const U = () => ({ uP: { value: 0 }, uT: { value: 0 }, uSize: { value: small ? 6.5 : 5.6 }, uPix: { value: 1 }, uAlpha: { value: .95 }, uSel: { value: 0 }, uSelPos: { value: new THREE.Vector3(99, 0, 99) } });
+  mat = new THREE.ShaderMaterial({ vertexShader: vs, fragmentShader: fs, uniforms: U(), transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending });
+  scene.add(new THREE.Points(g, mat));
+  glow = new THREE.ShaderMaterial({ vertexShader: vs, fragmentShader: fs, uniforms: U(), transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending });
+  glow.uniforms.uSize.value = small ? 64 : 58; glow.uniforms.uAlpha.value = .05; const gp = new THREE.Points(g, glow); gp.geometry = g.clone(); gp.geometry.setDrawRange(0, Math.floor(N * .22)); scene.add(gp);
+  resize(); addEventListener('resize', resize);
+} else { $('gl').hidden = true; $('still').hidden = false; }
+function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w < h ? 56 : 34; if (w > h * 1.25) camera.setViewOffset(w, h, -w * .15, -h * .03, w, h); else camera.setViewOffset(w, h, 0, h * .12, w, h); camera.updateProjectionMatrix(); const px = renderer.getPixelRatio() * h / 1080 * 3.2; mat.uniforms.uPix.value = px; glow.uniforms.uPix.value = px; }
+const ease = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; const lerp = (a, b, k) => a + (b - a) * k;
+let fromP = 0, tSwap = -1e9; const DURM = reduce ? 0.01 : 1.9;
+function frame(now) {
+  if (!running) return; requestAnimationFrame(frame); if (!ok) return;
+  const t = (now - t0) / 1000, k = Math.max(0, Math.min(1, (now - tSwap) / 1000 / DURM)); P = Math.max(0, Math.min(4, lerp(fromP, target, ease(k))));
+  mat.uniforms.uP.value = P; mat.uniforms.uT.value = t; glow.uniforms.uP.value = P; glow.uniforms.uT.value = t;
+  mEase[0] += (mouse[0] - mEase[0]) * .05; mEase[1] += (mouse[1] - mEase[1]) * .05;
+  const i = Math.max(0, Math.min(3, Math.floor(P))), f = P - i, a = CAM[i], b = CAM[i + 1], d = lerp(a[0], b[0], f), hgt = lerp(a[1], b[1], f), tx = lerp(a[2], b[2], f), ty = lerp(a[3], b[3], f);
+  const ang = (reduce ? .6 : .6 + Math.sin(t * .13) * .35) + mEase[0] * .35 + (P > 3.5 ? -.25 : 0);
+  camera.position.set(tx + Math.sin(ang) * d, hgt + ty - mEase[1] * .6, Math.cos(ang) * d); camera.lookAt(tx, ty, 0);
+  const s = sel >= 0 && P > 3.6 ? 1 : 0; mat.uniforms.uSel.value += (s - mat.uniforms.uSel.value) * .1; if (sel >= 0) mat.uniforms.uSelPos.value.set(...SITE_POS[sel]);
+  renderer.render(scene, camera); tags();
+}
+// ---------- chapters ----------
+const copy = $('copy'), rail = $('rail'), sites = $('sites'), hint = $('hint'), btnSites = $('btnSites');
+CH.forEach((c, i) => { const b = document.createElement('button'); b.type = 'button'; const s = document.createElement('span'); s.textContent = c.k; const l = document.createElement('i'); b.append(s, l); b.addEventListener('click', () => go(i)); rail.append(b); });
+function paint() { const c = CH[cur]; copy.querySelector('.n').textContent = cur < 4 ? '0' + (cur + 1) + ' / 04' : ''; copy.querySelector('h2').textContent = c.h; copy.querySelector('p').textContent = c.p; copy.classList.remove('swap');
+  [...rail.children].forEach((b, i) => b.setAttribute('aria-current', i === cur ? 'true' : 'false')); const m = cur === 4; sites.classList.toggle('off', !m); btnSites.setAttribute('aria-pressed', m ? 'true' : 'false'); btnSites.textContent = m ? 'Back to the story' : 'Sites'; copy.hidden = m; if (cur > 0) hint.style.opacity = 0; }
+let lock = 0;
+function go(i) { i = Math.max(0, Math.min(4, i)); if (i === cur) return; fromP = P; target = i; tSwap = performance.now(); cur = i; lock = performance.now() + (reduce ? 200 : 900); copy.classList.add('swap'); setTimeout(paint, reduce ? 0 : 420); if (i !== 4) select(-1); }
+let acc = 0;
+addEventListener('wheel', (e) => { if (entered === false) return; if (sites.contains(e.target) && sites.scrollHeight > sites.clientHeight + 2) return; if (performance.now() < lock) return; acc += e.deltaY; if (Math.abs(acc) > 60) { go(cur + (acc > 0 ? 1 : -1)); acc = 0; } }, { passive: true });
+let ty0 = null; addEventListener('touchstart', (e) => { ty0 = e.touches[0].clientY; }, { passive: true });
+addEventListener('touchend', (e) => { if (ty0 == null || !entered) return; const dy = e.changedTouches[0].clientY - ty0; ty0 = null; if (Math.abs(dy) > 50 && performance.now() >= lock && !(cur === 4 && sites.contains(e.target))) go(cur + (dy < 0 ? 1 : -1)); }, { passive: true });
+addEventListener('keydown', (e) => { if (!entered) return; if (['ArrowDown', 'PageDown', ' ', 'ArrowRight'].includes(e.key) && !(e.target.closest && e.target.closest('button,a'))) { go(cur + 1); e.preventDefault(); } if (['ArrowUp', 'PageUp', 'ArrowLeft'].includes(e.key)) { go(cur - 1); e.preventDefault(); } });
+addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') { mouse[0] = e.clientX / innerWidth * 2 - 1; mouse[1] = e.clientY / innerHeight * 2 - 1; } });
+btnSites.addEventListener('click', () => go(cur === 4 ? 3 : 4));
+// ---------- sites menu ----------
+const list = $('siteList'), card = $('siteCard'), tagBox = $('tags'); const tagEls = [];
+SITES.forEach((s, i) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'site'; const a = document.createElement('div'); a.className = 'id'; a.textContent = s.id; const n = document.createElement('div'); n.className = 'nm'; n.textContent = s.name; const t = document.createElement('div'); t.className = 'ty'; t.textContent = s.types; b.append(a, n, t);
+  b.addEventListener('click', () => select(i)); b.addEventListener('pointerenter', () => { if (sel < 0) hover(i); }); b.addEventListener('pointerleave', () => { if (sel < 0) hover(-1); }); list.append(b);
+  const g = document.createElement('div'); g.className = 'tag'; const bb = document.createElement('b'); bb.textContent = s.id; g.append(bb, s.name); tagBox.append(g); tagEls.push(g); });
+let hov = -1; function hover(i) { hov = i; if (ok) { const on = i >= 0; if (on) mat.uniforms.uSelPos.value.set(...SITE_POS[i]); mat.uniforms.uSel.value = Math.max(mat.uniforms.uSel.value, on ? .6 : 0); } }
+function select(i) { sel = i; [...list.children].forEach((b, j) => b.classList.toggle('on', j === i)); card.textContent = ''; if (i < 0) return; const s = SITES[i]; const c = document.createElement('div'); c.className = 'card'; const h = document.createElement('div'); h.style.fontWeight = '700'; h.textContent = s.id + '  ' + s.name; const a = document.createElement('a'); a.href = s.href; a.textContent = 'Open the plan room'; const n = document.createElement('div'); n.className = 'note'; n.textContent = s.note; c.append(h, a, n); card.append(c); }
+const v3 = ok ? new THREE.Vector3() : null;
+function tags() { const show = P > 3.7; tagEls.forEach((g, i) => { if (!show) { g.style.opacity = 0; return; } v3.set(SITE_POS[i][0], SITE_POS[i][1] + 3.0, SITE_POS[i][2]).project(camera); g.style.opacity = 1; g.style.left = ((v3.x * .5 + .5) * innerWidth) + 'px'; g.style.top = ((-v3.y * .5 + .5) * innerHeight) + 'px'; }); }
+// ---------- enter and full screen ----------
+let entered = false; const enter = $('enter'), btnFull = $('btnFull'), root = document.documentElement;
+const canFull = !!(root.requestFullscreen || root.webkitRequestFullscreen);
+function full(on) { try { if (on) { const r = (root.requestFullscreen || root.webkitRequestFullscreen).call(root); if (r && r.catch) r.catch(() => {}); } else if (document.fullscreenElement || document.webkitFullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (e) {} }
+function start(fs) { if (fs && canFull) full(true); entered = true; enter.classList.add('out'); setTimeout(() => { enter.hidden = true; }, 750); btnFull.hidden = !canFull; paint(); $('btnSites').focus({ preventScroll: true }); }
+$('go').addEventListener('click', () => start(true)); $('goWin').addEventListener('click', () => start(false));
+if (!canFull) { $('go').querySelector('small').remove(); $('goWin').hidden = true; }
+btnFull.addEventListener('click', () => full(!(document.fullscreenElement || document.webkitFullscreenElement)));
+const fsSync = () => { btnFull.textContent = (document.fullscreenElement || document.webkitFullscreenElement) ? 'Exit full screen' : 'Full screen'; }; document.addEventListener('fullscreenchange', fsSync); document.addEventListener('webkitfullscreenchange', fsSync);
+document.addEventListener('visibilitychange', () => { const r = !document.hidden; if (r && !running) { running = true; requestAnimationFrame(frame); } else if (!r) running = false; });
+copy.hidden = true; rail.hidden = false; requestAnimationFrame(frame);
+if (!ok) { // no WebGL: the still image, and the sites list stays reachable
+  CH.forEach((c) => c); }
+window.__z1 = { go, select, state: () => ({ cur, P, ok, N, entered }) };
 </script>
 </body>
 </html>
