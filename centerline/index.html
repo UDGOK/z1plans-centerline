@@ -154,7 +154,7 @@ main{padding-block:26px 60px}
 
 /* checklist */
 .rows{display:grid;gap:0;border-top:2px solid var(--ink);margin-top:12px}
-.rowc{display:grid;grid-template-columns:104px minmax(0,1fr) minmax(0,1.3fr) minmax(0,1.6fr);gap:6px 18px;padding:13px 0;border-bottom:1px solid var(--line);align-items:start}
+.rowc{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.3fr) minmax(0,1.6fr) minmax(0,.7fr);gap:6px 18px;padding:13px 0;border-bottom:1px solid var(--line);align-items:start}
 .pill{display:inline-block;padding:3px 9px;border-radius:99px;font-size:13px;font-weight:700;white-space:nowrap}
 .pill.MEETS{background:var(--ok-bg);color:var(--ok)} .pill.CONFIRM{background:var(--amb-bg);color:var(--amb)} .pill.OPEN{background:var(--red-bg);color:var(--red)}
 .rowc .it{font-weight:700}
@@ -411,7 +411,7 @@ function exEquip(ex,sid){
     p.appendChild($('div',{class:'ph'},$('span',{class:'wide pn',text:String(cur.n)}),$('span',{class:'pt',text:cur.t})));
     p.appendChild($('p',{class:'pd',text:cur.d}));
     p.appendChild($('div',{class:'chips'},$('span',{text:'Qty '+cur.q}),$('span',{text:ex.views[v].room})));
-    if(more){p.appendChild($('div',{class:'pmore'},$('div',{class:'pk',text:'What it is for'}),$('p',{text:cur.u||''}),$('div',{class:'pk',text:'Where'}),$('p',{text:ex.views[v].name}),$('div',{class:'pk',text:'Datasheet'}),$('p',{text:'Added when a make and model is chosen.'})));
+    if(more){p.appendChild($('div',{class:'pmore'},$('div',{class:'pk',text:'What it is for'}),$('p',{text:cur.u||''}),$('div',{class:'pk',text:'Where'}),$('p',{text:ex.views[v].name})));
       var i=ex.topics.indexOf(cur),nx=ex.topics[(i+1)%ex.topics.length];
       p.appendChild($('div',{class:'pact'},$('button',{class:'plink',type:'button',text:'Next: '+nx.n+' '+nx.t,onclick:function(){pick(nx,true);}})));}
     else p.appendChild($('button',{class:'plink',type:'button',text:'Open the full card',onclick:function(){more=true;pop();}}));
@@ -434,22 +434,16 @@ function exEquip(ex,sid){
 }
 
 function exCheck(ex){
-  var box=$('section',{style:'margin-bottom:38px'}),fs='All',fd='All',rows=$('div',{class:'rows'}),t1=$('div',{class:'tabs'}),t2=$('div',{class:'tabs'});
-  var n={MEETS:0,CONFIRM:0,OPEN:0};ex.rows.forEach(function(r){n[r.status]++;});
-  var names={MEETS:'Meets',CONFIRM:'Confirm',OPEN:'Open'};
-  function draw(){rows.textContent='';var c=0;ex.rows.forEach(function(r){
-      if(fs!=='All'&&r.status!==fs)return;if(fd!=='All'&&r.disc!==fd)return;c++;
-      rows.appendChild($('div',{class:'rowc'},$('div',null,$('span',{class:'pill '+r.status,text:names[r.status]})),$('div',{class:'it',text:r.item}),
-        $('div',null,$('span',{class:'lab',text:'What the code asks'}),r.asks),$('div',null,$('span',{class:'lab',text:'This design'}),r.design)));});
-    if(!c)rows.appendChild($('p',{class:'note',text:'No items match both filters. Clear one of them.'}));
-    [t1,t2].forEach(function(t,k){Array.prototype.forEach.call(t.children,function(b){b.setAttribute('aria-pressed',b.dataset.v===(k?fd:fs)?'true':'false');});});}
-  [['All','All '+ex.rows.length],['MEETS',n.MEETS+' meet'],['CONFIRM',n.CONFIRM+' to confirm'],['OPEN',n.OPEN+' open']].forEach(function(o){var b=$('button',{type:'button',text:o[1],onclick:function(){fs=o[0];draw();}});b.dataset.v=o[0];t1.appendChild(b);});
+  var box=$('section',{style:'margin-bottom:38px'}),fd='All',rows=$('div',{class:'rows'}),t2=$('div',{class:'tabs'});
+  function draw(){rows.textContent='';ex.rows.forEach(function(r){
+      if(fd!=='All'&&r.disc!==fd)return;
+      rows.appendChild($('div',{class:'rowc'},$('div',{class:'it',text:r.item}),
+        $('div',null,$('span',{class:'lab',text:'Code requirement'}),r.asks),$('div',null,$('span',{class:'lab',text:'Design'}),r.design),$('div',{class:'mut'},$('span',{class:'lab',text:'Where shown'}),r.where||'')));});
+    Array.prototype.forEach.call(t2.children,function(b){b.setAttribute('aria-pressed',b.dataset.v===fd?'true':'false');});}
   ['All','Zoning','Building','Fire','Electrical','Mechanical'].forEach(function(o){var b=$('button',{type:'button',text:o==='All'?'Every review':o,onclick:function(){fd=o;draw();}});b.dataset.v=o;t2.appendChild(b);});
-  var tally=$('div',{class:'tally','aria-hidden':'true'});[['MEETS','--ok'],['CONFIRM','--amb'],['OPEN','--red']].forEach(function(o){var i=$('i');i.style.flex=String(n[o[0]]);i.style.background='var('+o[1]+')';tally.appendChild(i);});
-  box.appendChild(exHead(ex));box.appendChild(tally);box.appendChild($('div',{style:'margin-top:18px'},t1,t2));box.appendChild(rows);
+  box.appendChild(exHead(ex));box.appendChild($('div',{style:'margin-top:18px'},t2));box.appendChild(rows);
   box.appendChild($('p',{class:'note',text:ex.note+' The grouping by kind of review is a convenience on this page; the sheet lists every item once.'}));draw();return box;
 }
-
 function exCompare(ex){
   var box=$('section',{style:'margin-bottom:38px'}),A=stage(ex.a,ex.crop),top=$('div',{class:'top'}),B=stage(ex.b,ex.crop),h=$('div',{class:'handle'});
   A.className+=' cmp';B.style.position='absolute';B.style.inset='0';B.style.border='0';top.appendChild(B);A.appendChild(top);A.appendChild(h);
